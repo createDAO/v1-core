@@ -28,7 +28,7 @@ The system consists of several core components:
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/createDAO.git
+git clone https://github.com/createDAO/v1-core.git
 cd createDAO/hardhat
 
 # Install dependencies
