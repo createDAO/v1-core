@@ -9,6 +9,9 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    environment:
+      name: Test Reports
+      url: ${{ steps.deploy.outputs.production_url }}
 
     steps:
     - uses: actions/checkout@v3
@@ -43,12 +46,9 @@ jobs:
 
     - name: Deploy to Vercel
       if: success()
-      environment:
-        name: Test Reports
-        url: ${{ steps.deploy.outputs.production_url }}
+      id: deploy
       env:
         VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-      id: deploy
       run: |
         # Install Vercel CLI
         npm install -g vercel
