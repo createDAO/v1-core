@@ -159,54 +159,32 @@ abstract contract DAOExecutor is DAOProposals, IDAOExecutor {
             address presaleImpl
         ) = IDAOFactory(core.factory).getImplementation(uData.newVersion);
 
-        address expectedImpl = _getImplementationAddress(
-            uData.contractToUpgrade,
-            daoImpl,
-            tokenImpl,
-            treasuryImpl,
-            stakingImpl,
-            presaleImpl
-        );
-
-        if (uData.contractToUpgrade == IDAOBase.UpgradeableContract.Presale) {
-            require(
-                proposals.presaleContracts[proposalId] != address(0),
-                "Presale not found"
-            );
-        }
-
+        // Verify implementations match what was proposed
         require(
-            expectedImpl == uData.newImplementation,
+            uData.newImplementations[0] == daoImpl &&
+            uData.newImplementations[1] == tokenImpl &&
+            uData.newImplementations[2] == treasuryImpl &&
+            uData.newImplementations[3] == stakingImpl,
             "Implementation changed"
         );
 
-        address contractToUpgrade = core.upgradeableContracts[
-            uData.contractToUpgrade
-        ];
+        // Upgrade staking first (special handling for executing flag)
+        address stakingContract = core.upgradeableContracts[IDAOBase.UpgradeableContract.Staking];
+        IDAOStaking(stakingContract).setExecutingProposal(true);
+        IUpgradeable(stakingContract).upgradeToAndCall(stakingImpl, "");
+        IDAOStaking(stakingContract).setExecutingProposal(false);
 
-        if (uData.contractToUpgrade == IDAOBase.UpgradeableContract.Presale) {
-            IUpgradeable(proposals.presaleContracts[proposalId]).upgradeToAndCall(
-                uData.newImplementation,
-                ""
-            );
-        } else if (uData.contractToUpgrade == IDAOBase.UpgradeableContract.DAO) {
-            _authorizeUpgrade(uData.newImplementation);
-            upgradeToAndCall(uData.newImplementation, "");
-        } else if (uData.contractToUpgrade == IDAOBase.UpgradeableContract.Staking) {
-            // Set executing flag on staking contract before upgrade
-            IDAOStaking(contractToUpgrade).setExecutingProposal(true);
-            IUpgradeable(contractToUpgrade).upgradeToAndCall(
-                uData.newImplementation,
-                ""
-            );
-            // Reset executing flag after upgrade
-            IDAOStaking(contractToUpgrade).setExecutingProposal(false);
-        } else {
-            IUpgradeable(contractToUpgrade).upgradeToAndCall(
-                uData.newImplementation,
-                ""
-            );
-        }
+        // Upgrade token
+        address tokenContract = core.upgradeableContracts[IDAOBase.UpgradeableContract.Token];
+        IUpgradeable(tokenContract).upgradeToAndCall(tokenImpl, "");
+
+        // Upgrade treasury
+        address treasuryContract = core.upgradeableContracts[IDAOBase.UpgradeableContract.Treasury];
+        IUpgradeable(treasuryContract).upgradeToAndCall(treasuryImpl, "");
+
+        // Upgrade DAO last
+        _authorizeUpgrade(daoImpl);
+        upgradeToAndCall(daoImpl, "");
     }
 
     // Emergency functions

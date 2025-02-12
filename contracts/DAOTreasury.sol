@@ -54,7 +54,7 @@ contract DAOTreasury is Initializable, UUPSUpgradeable, OwnableUpgradeable {
 
     function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 
-    function version() external pure returns (string memory) {
+    function version() external pure virtual returns (string memory) {
         return VERSION;
     }
     

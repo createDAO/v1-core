@@ -1,17 +1,31 @@
-node_modules
+# Dependency directories
+node_modules/
 .env
-context.txt
+.context
+
 # Hardhat files
-/cache
-/artifacts
+cache
+artifacts
+typechain
+typechain-types
 
-# TypeChain files
-/typechain
-/typechain-types
+# IDE
+.vscode
+.idea
 
-# solidity-coverage files
-/coverage
-/coverage.json
+# Debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-# Hardhat Ignition default folder for deployments against a local node
-ignition/deployments/chain-31337
+# Coverage directory
+coverage
+coverage.json
+
+# Keep reports directory but ignore temporary files
+reports/data/*
+!reports/data/.gitkeep
+reports/coverage
+
+# Vercel
+.vercel

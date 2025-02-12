@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Contract Test Results</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <!-- Add marked.js for markdown parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- Add tabs functionality -->
+    <script src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body class="bg-gray-100" x-data="{ activeTab: 'tests' }">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Logo and Title -->
+        <div class="flex flex-col items-center mb-8">
+            <svg width="180" height="40" viewBox="0 0 180 40" fill="none" xmlns="http://www.w3.org/2000/svg" class="mb-4">
+                <circle cx="20" cy="20" r="20" fill="black"/>
+                <text
+                    x="48"
+                    y="27.5"
+                    fill="black"
+                    style="font-size: 24px; font-family: sans-serif; letter-spacing: 0.25px;"
+                >
+                    createDAO
+                </text>
+            </svg>
+            <h1 class="text-3xl font-bold text-center">Smart Contract Test Results</h1>
+            <div class="mt-2 text-sm text-gray-600" id="testTime">
+                Test run at: Loading...
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="mb-8 border-b border-gray-200">
+            <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+                <button 
+                    @click="activeTab = 'tests'" 
+                    :class="{'border-blue-500 text-blue-600': activeTab === 'tests'}"
+                    class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                    Test Results
+                </button>
+                <button 
+                    @click="activeTab = 'coverage'" 
+                    :class="{'border-blue-500 text-blue-600': activeTab === 'coverage'}"
+                    class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                    Coverage Report
+                </button>
+                <button 
+                    @click="activeTab = 'gas'" 
+                    :class="{'border-blue-500 text-blue-600': activeTab === 'gas'}"
+                    class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                    Gas Report
+                </button>
+            </nav>
+        </div>
+
+        <!-- Test Results Tab -->
+        <div x-show="activeTab === 'tests'" class="space-y-8">
+            <!-- Test Summary -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+            <h2 class="text-2xl font-semibold mb-4">Test Summary</h2>
+            <div class="grid grid-cols-4 gap-4">
+                <div class="bg-green-100 p-4 rounded-lg">
+                    <h3 class="text-lg font-medium text-green-800">Total Tests</h3>
+                    <p id="totalTests" class="text-2xl font-bold text-green-600">-</p>
+                </div>
+                <div class="bg-blue-100 p-4 rounded-lg">
+                    <h3 class="text-lg font-medium text-blue-800">Passed</h3>
+                    <p id="passedTests" class="text-2xl font-bold text-blue-600">-</p>
+                </div>
+                <div class="bg-red-100 p-4 rounded-lg">
+                    <h3 class="text-lg font-medium text-red-800">Failed</h3>
+                    <p id="failedTests" class="text-2xl font-bold text-red-600">-</p>
+                </div>
+                <div class="bg-purple-100 p-4 rounded-lg">
+                    <h3 class="text-lg font-medium text-purple-800">Duration</h3>
+                    <p id="duration" class="text-2xl font-bold text-purple-600">-</p>
+                </div>
+            </div>
+        </div>
+
+            <!-- Test Suites -->
+            <div class="bg-white rounded-lg shadow-lg p-6 mt-8">
+                <h2 class="text-2xl font-semibold mb-4">Test Suites</h2>
+                <div id="testSuites" class="space-y-4">
+                    <!-- Test suites will be inserted here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Coverage Report Tab -->
+        <div x-show="activeTab === 'coverage'" class="bg-white rounded-lg shadow-lg overflow-hidden">
+            <div class="flex justify-between items-center p-4 border-b">
+                <h2 class="text-2xl font-semibold">Coverage Report</h2>
+                <a href="coverage/lcov-report/index.html" target="_blank" rel="noopener" class="text-blue-600 hover:text-blue-800">
+                    View Full Report ↗
+                </a>
+            </div>
+            <div class="w-full overflow-auto">
+                <iframe 
+                    id="coverageFrame"
+                    src="coverage/lcov-report/index.html" 
+                    class="w-full border-0" 
+                    style="width: 100%; min-height: 800px;"
+                    sandbox="allow-same-origin allow-scripts"
+                ></iframe>
+                <noscript>
+                    <div class="p-4 bg-yellow-50 text-yellow-800">
+                        JavaScript is required to view the coverage report. Please enable JavaScript or <a href="coverage/lcov-report/index.html" target="_blank" rel="noopener" class="underline">view the report directly</a>.
+                    </div>
+                </noscript>
+            </div>
+        </div>
+
+        <!-- Gas Report Tab -->
+        <div x-show="activeTab === 'gas'" class="bg-white rounded-lg shadow-lg p-6">
+            <h2 class="text-2xl font-semibold mb-4">Gas Report</h2>
+            <div id="gasReport" class="space-y-6 overflow-x-auto">
+                <!-- Gas report will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Function to load file content synchronously
+        function loadFileContent(filePath) {
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', filePath, false); // false makes it synchronous
+            try {
+                xhr.send();
+                if (xhr.status === 200) {
+                    return xhr.responseText;
+                }
+            } catch (error) {
+                console.error(`Error loading ${filePath}:`, error);
+            }
+            return null;
+        }
+
+        // Function to format gas numbers
+        function formatGas(value) {
+            return value ? value.toLocaleString() : '-';
+        }
+
+        // Function to load and display gas report
+        function loadGasReport() {
+            try {
+                const content = loadFileContent('data/gas-results.json');
+                if (!content) {
+                    console.error('Failed to load gas report');
+                    document.getElementById('gasReport').innerHTML = `
+                        <div class="bg-red-50 p-4 rounded-lg">
+                            <p class="text-red-800">Error loading gas report. Please ensure you've run the tests first.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const data = JSON.parse(content);
+                const container = document.getElementById('gasReport');
+                
+                // Add compiler info
+                container.innerHTML = `
+                    <div class="bg-blue-50 p-4 rounded-lg mb-6">
+                        <h3 class="text-lg font-semibold text-blue-800 mb-2">Compiler Settings</h3>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div>
+                                <span class="text-sm text-blue-600">Solc Version</span>
+                                <p class="font-medium">${data.solcVersion}</p>
+                            </div>
+                            <div>
+                                <span class="text-sm text-blue-600">Optimizer</span>
+                                <p class="font-medium">${data.optimizer.enabled ? 'Enabled' : 'Disabled'}</p>
+                            </div>
+                            <div>
+                                <span class="text-sm text-blue-600">Optimizer Runs</span>
+                                <p class="font-medium">${data.optimizer.runs}</p>
+                            </div>
+                            <div>
+                                <span class="text-sm text-blue-600">Block Gas Limit</span>
+                                <p class="font-medium">${formatGas(data.blockLimit)}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                // Add createDAO transaction if available
+                if (data.createDAOTransaction) {
+                    container.innerHTML += `
+                        <div class="mb-8">
+                            <h3 class="text-xl font-semibold mb-4">🚀 Main Platform Transaction</h3>
+                            <div class="bg-gradient-to-r from-yellow-50 to-orange-50 p-6 rounded-lg border border-yellow-200 shadow-sm">
+                                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                                    <div>
+                                        <div class="flex items-center gap-2 mb-1">
+                                            <span class="text-orange-600 font-semibold">createDAO</span>
+                                            <span class="bg-yellow-200 text-yellow-800 text-xs px-2 py-1 rounded">Core Function</span>
+                                        </div>
+                                        <p class="text-sm text-gray-600 mb-3">The primary transaction for creating a new DAO in the platform</p>
+                                        <div class="flex items-baseline gap-2">
+                                            <span class="text-2xl font-bold text-gray-900">${formatGas(data.createDAOTransaction.avgGas)}</span>
+                                            <span class="text-sm text-gray-600">gas average</span>
+                                        </div>
+                                    </div>
+                                    ${data.createDAOTransaction.maxGas ? `
+                                        <div class="bg-white bg-opacity-50 px-4 py-3 rounded-lg">
+                                            <span class="text-sm text-orange-600 block mb-1">Maximum Gas Used</span>
+                                            <div class="flex items-baseline gap-2">
+                                                <span class="text-xl font-bold text-gray-900">${formatGas(data.createDAOTransaction.maxGas)}</span>
+                                                <span class="text-sm text-gray-600">gas</span>
+                                            </div>
+                                        </div>
+                                    ` : ''}
+                                </div>
+                                <div class="mt-4 pt-4 border-t border-yellow-200">
+                                    <div class="text-sm text-gray-600">
+                                        <span class="font-medium">Note:</span> This transaction deploys and initializes a complete DAO infrastructure, including governance, token, and treasury systems.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                // Add deployments section
+                if (data.deployments.length > 0) {
+                    const deploymentsHtml = `
+                        <div class="mb-8">
+                            <h3 class="text-xl font-semibold mb-4">Contract Deployments</h3>
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full">
+                                    <thead class="bg-gray-100">
+                                        <tr>
+                                            <th class="px-4 py-2 text-left">Contract</th>
+                                            <th class="px-4 py-2 text-right">Gas Used</th>
+                                            <th class="px-4 py-2 text-right">% of Limit</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${data.deployments.map(d => `
+                                            <tr class="hover:bg-gray-50">
+                                                <td class="px-4 py-2 font-medium">${d.contract}</td>
+                                                <td class="px-4 py-2 text-right">${formatGas(d.gas)}</td>
+                                                <td class="px-4 py-2 text-right">${d.percentOfLimit}%</td>
+                                            </tr>
+                                        `).join('')}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    `;
+                    container.innerHTML += deploymentsHtml;
+                }
+
+                // Add transactions by contract
+                if (data.transactionsByContract) {
+                    container.innerHTML += `
+                        <div class="mb-8">
+                            <h3 class="text-xl font-semibold mb-4">Contract Transactions</h3>
+                            <div class="space-y-6">
+                                ${Object.entries(data.transactionsByContract).map(([contract, transactions]) => `
+                                    <div class="overflow-x-auto">
+                                        <h4 class="text-lg font-medium mb-2">${contract}</h4>
+                                        <table class="min-w-full">
+                                            <thead class="bg-gray-100">
+                                                <tr>
+                                                    <th class="px-4 py-2 text-left">Method</th>
+                                                    <th class="px-4 py-2 text-right">Average Gas</th>
+                                                    <th class="px-4 py-2 text-right">Max Gas</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                ${transactions.map(tx => `
+                                                    <tr class="hover:bg-gray-50">
+                                                        <td class="px-4 py-2 font-medium">${tx.method}</td>
+                                                        <td class="px-4 py-2 text-right">${formatGas(tx.avgGas)}</td>
+                                                        <td class="px-4 py-2 text-right">${formatGas(tx.maxGas)}</td>
+                                                    </tr>
+                                                `).join('')}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+
+            } catch (error) {
+                console.error('Error loading gas report:', error);
+                document.getElementById('gasReport').innerHTML = `
+                    <div class="bg-red-50 p-4 rounded-lg">
+                        <p class="text-red-800">Error loading gas report. Please ensure you've run the tests first.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Function to load and display test results
+        function loadTestResults() {
+            try {
+                const content = loadFileContent('data/test-results.json');
+                if (!content) {
+                    console.error('Failed to load test results');
+                    return;
+                }
+                
+                const data = JSON.parse(content);
+                
+                // Update summary
+                document.getElementById('totalTests').textContent = data.stats.tests;
+                document.getElementById('passedTests').textContent = data.stats.passes;
+                document.getElementById('failedTests').textContent = data.stats.failures;
+                document.getElementById('duration').textContent = `${(data.stats.duration / 1000).toFixed(2)}s`;
+
+                // Group tests by suite
+                const suites = {};
+                data.tests.forEach(test => {
+                    const suiteName = test.fullTitle.split(' ')[0];
+                    if (!suites[suiteName]) {
+                        suites[suiteName] = {
+                            name: suiteName,
+                            tests: []
+                        };
+                    }
+                    suites[suiteName].tests.push({
+                        name: test.title,
+                        passed: !test.err || Object.keys(test.err).length === 0,
+                        duration: test.duration
+                    });
+                });
+
+                // Update test suites display
+                const testSuitesContainer = document.getElementById('testSuites');
+                Object.values(suites).forEach(suite => {
+                    const suiteElement = document.createElement('div');
+                    suiteElement.className = 'bg-gray-50 rounded-lg p-4';
+                    
+                    const suiteHeader = document.createElement('h3');
+                    suiteHeader.className = 'text-xl font-semibold mb-2';
+                    suiteHeader.textContent = suite.name;
+                    
+                    const testsList = document.createElement('div');
+                    testsList.className = 'space-y-2';
+                    
+                    suite.tests.forEach(test => {
+                        const testElement = document.createElement('div');
+                        testElement.className = `flex items-center p-2 rounded ${test.passed ? 'bg-green-50' : 'bg-red-50'}`;
+                        
+                        const icon = document.createElement('span');
+                        icon.className = `mr-2 ${test.passed ? 'text-green-600' : 'text-red-600'}`;
+                        icon.textContent = test.passed ? '✓' : '✕';
+                        
+                        const name = document.createElement('span');
+                        name.className = test.passed ? 'text-green-800' : 'text-red-800';
+                        name.textContent = test.name;
+                        
+                        testElement.appendChild(icon);
+                        testElement.appendChild(name);
+                        testsList.appendChild(testElement);
+                    });
+                    
+                    suiteElement.appendChild(suiteHeader);
+                    suiteElement.appendChild(testsList);
+                    testSuitesContainer.appendChild(suiteElement);
+                });
+
+            } catch (error) {
+                console.error('Error loading test results:', error);
+                document.getElementById('testSuites').innerHTML = `
+                    <div class="bg-red-50 p-4 rounded-lg">
+                        <p class="text-red-800">Error loading test results. Please ensure you've run the tests first.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Function to update test time
+        function updateTestTime() {
+            const testTimeElement = document.getElementById('testTime');
+            const content = loadFileContent('data/test-results.json');
+            if (content) {
+                const data = JSON.parse(content);
+                const timestamp = new Date(data.stats.start);
+                testTimeElement.textContent = `Test run at: ${timestamp.toLocaleString()}`;
+            }
+        }
+
+        // Load reports when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            loadTestResults();
+            loadGasReport();
+            updateTestTime();
+        });
+    </script>
+</body>
+</html>
