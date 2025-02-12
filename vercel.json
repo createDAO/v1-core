@@ -1,0 +1,19 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "reports/**/*",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/reports/$1"
+    }
+  ],
+  "github": {
+    "enabled": true,
+    "silent": true
+  }
+}

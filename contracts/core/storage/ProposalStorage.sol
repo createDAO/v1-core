@@ -23,8 +23,7 @@ library ProposalStorage {
     }
 
     struct UpgradeData {
-        IDAOBase.UpgradeableContract contractToUpgrade;
-        address newImplementation;
+        address[] newImplementations; // Array of new implementations [dao, token, treasury, staking]
         string newVersion;
     }
 

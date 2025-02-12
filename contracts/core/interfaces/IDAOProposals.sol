@@ -16,7 +16,6 @@ interface IDAOProposals is IDAOBase {
     ) external returns (uint256);
 
     function proposeUpgrade(
-        UpgradeableContract contractType,
         string calldata newVersion
     ) external returns (uint256);
 
@@ -42,8 +41,7 @@ interface IDAOProposals is IDAOBase {
         external
         view
         returns (
-            UpgradeableContract contractToUpgrade,
-            address newImplementation,
+            address[] memory newImplementations,
             string memory newVersion
         );
 

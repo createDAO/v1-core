@@ -245,16 +245,11 @@ abstract contract DAOProposals is Initializable, UUPSUpgradeable, OwnableUpgrade
     }
 
     function proposeUpgrade(
-        IDAOBase.UpgradeableContract contractType,
         string calldata newVersion
     ) external whenNotPaused returns (uint256) {
         CoreStorage.Layout storage core = _getCore();
         ProposalStorage.Layout storage proposals = _getProposals();
 
-        require(
-            core.upgradeableContracts[contractType] != address(0),
-            "Invalid contract type"
-        );
         require(
             IDAOStaking(core.upgradeableContracts[IDAOBase.UpgradeableContract.Staking])
                 .getVotingPower(msg.sender) >= core.minProposalStake,
@@ -269,23 +264,24 @@ abstract contract DAOProposals is Initializable, UUPSUpgradeable, OwnableUpgrade
             address presaleImpl
         ) = IDAOFactory(core.factory).getImplementation(newVersion);
 
-        address newImplementation = _getImplementationAddress(
-            contractType,
-            daoImpl,
-            tokenImpl,
-            treasuryImpl,
-            stakingImpl,
-            presaleImpl
-        );
-        require(newImplementation != address(0), "Invalid version");
+        require(daoImpl != address(0), "Invalid version");
+        require(tokenImpl != address(0), "Invalid version");
+        require(treasuryImpl != address(0), "Invalid version");
+        require(stakingImpl != address(0), "Invalid version");
 
         uint256 proposalId = proposals.proposalCount++;
         ProposalStorage.Proposal storage proposal = proposals.proposals[proposalId];
         proposal.proposalType = IDAOBase.ProposalType.Upgrade;
         proposal.endTime = block.timestamp + core.votingPeriod;
 
-        proposals.upgradeData[proposalId].contractToUpgrade = contractType;
-        proposals.upgradeData[proposalId].newImplementation = newImplementation;
+        // Store all implementations
+        address[] memory newImplementations = new address[](4);
+        newImplementations[0] = daoImpl;
+        newImplementations[1] = tokenImpl;
+        newImplementations[2] = treasuryImpl;
+        newImplementations[3] = stakingImpl;
+
+        proposals.upgradeData[proposalId].newImplementations = newImplementations;
         proposals.upgradeData[proposalId].newVersion = newVersion;
 
         DAOEvents.emitProposalCreated(
@@ -294,7 +290,7 @@ abstract contract DAOProposals is Initializable, UUPSUpgradeable, OwnableUpgrade
             address(0),
             address(0),
             0,
-            contractType,
+            IDAOBase.UpgradeableContract.DAO, // Main contract type for event
             newVersion
         );
         return proposalId;
@@ -376,15 +372,13 @@ abstract contract DAOProposals is Initializable, UUPSUpgradeable, OwnableUpgrade
         external
         view
         returns (
-            IDAOBase.UpgradeableContract contractToUpgrade,
-            address newImplementation,
+            address[] memory newImplementations,
             string memory newVersion
         )
     {
         ProposalStorage.UpgradeData storage data = _getProposals().upgradeData[proposalId];
         return (
-            data.contractToUpgrade,
-            data.newImplementation,
+            data.newImplementations,
             data.newVersion
         );
     }
