@@ -1,8 +1,6 @@
 name: Test Smart Contracts
 
 on:
-  push:
-    branches: [ main, master ]
   pull_request:
     branches: [ main, master ]
 

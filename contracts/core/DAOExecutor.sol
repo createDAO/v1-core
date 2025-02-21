@@ -7,6 +7,7 @@ import "./interfaces/IDAOTreasury.sol";
 import "./interfaces/IDAOToken.sol";
 import "./interfaces/IDAOPresale.sol";
 import "./interfaces/IUpgradeable.sol";
+import "./interfaces/IDAOModule.sol";
 import "../DAOPresaleProxy.sol";
 import "./storage/CoreStorage.sol";
 import "./storage/ProposalStorage.sol";
@@ -19,6 +20,21 @@ abstract contract DAOExecutor is DAOProposals, IDAOExecutor {
     using CoreStorage for CoreStorage.Layout;
     using ProposalStorage for ProposalStorage.Layout;
     using DAOEvents for *;
+
+    function _executeTransferFromTreasury(
+        address token,
+        address recipient,
+        uint256 amount
+    ) internal {
+        CoreStorage.Layout storage core = _getCore();
+        if (token == address(0)) {
+            IDAOTreasury(core.upgradeableContracts[IDAOBase.UpgradeableContract.Treasury])
+                .transferETH(payable(recipient), amount);
+        } else {
+            IDAOTreasury(core.upgradeableContracts[IDAOBase.UpgradeableContract.Treasury])
+                .transferERC20(token, recipient, amount);
+        }
+    }
 
     function execute(uint256 proposalId) external {
         CoreStorage.Layout storage core = _getCore();
@@ -50,6 +66,8 @@ abstract contract DAOExecutor is DAOProposals, IDAOExecutor {
             _executePresale(proposalId);
         } else if (proposal.proposalType == IDAOBase.ProposalType.Upgrade) {
             _executeUpgrade(proposalId);
+        } else if (proposal.proposalType == IDAOBase.ProposalType.ModuleUpgrade) {
+            _executeModuleUpgrade(proposalId);
         } else if (proposal.proposalType == IDAOBase.ProposalType.PresalePause) {
             _executePresalePause(proposalId);
         } else if (proposal.proposalType == IDAOBase.ProposalType.PresaleWithdraw) {
@@ -63,6 +81,29 @@ abstract contract DAOExecutor is DAOProposals, IDAOExecutor {
         DAOEvents.emitProposalExecuted(proposalId);
         
         core.executingProposal = false; // Reset flag after execution
+    }
+
+    function _executeModuleUpgrade(uint256 proposalId) internal {
+        CoreStorage.Layout storage core = _getCore();
+        ProposalStorage.ModuleUpgradeData storage mData = _getProposals().moduleUpgradeData[proposalId];
+
+        // Get new implementation from factory
+        address newImpl = IDAOFactory(core.factory).getModuleImplementation(
+            mData.moduleType,
+            mData.newVersion
+        );
+        require(newImpl != address(0), "Invalid module implementation");
+
+        // Upgrade the module
+        IUpgradeable(mData.moduleAddress).upgradeToAndCall(newImpl, "");
+
+        // Emit upgrade event
+        DAOEvents.emitModuleUpgraded(
+            proposalId,
+            mData.moduleAddress,
+            mData.moduleType,
+            mData.newVersion
+        );
     }
 
     function _executePresalePause(uint256 proposalId) internal {
@@ -80,16 +121,8 @@ abstract contract DAOExecutor is DAOProposals, IDAOExecutor {
     }
 
     function _executeTransfer(uint256 proposalId) internal {
-        CoreStorage.Layout storage core = _getCore();
         ProposalStorage.TransferData storage tData = _getProposals().transferData[proposalId];
-        
-        if (tData.token == address(0)) {
-            IDAOTreasury(core.upgradeableContracts[IDAOBase.UpgradeableContract.Treasury])
-                .transferETH(payable(tData.recipient), tData.amount);
-        } else {
-            IDAOTreasury(core.upgradeableContracts[IDAOBase.UpgradeableContract.Treasury])
-                .transferERC20(tData.token, tData.recipient, tData.amount);
-        }
+        _executeTransferFromTreasury(tData.token, tData.recipient, tData.amount);
     }
 
     function _executePresale(uint256 proposalId) internal {
@@ -107,14 +140,10 @@ abstract contract DAOExecutor is DAOProposals, IDAOExecutor {
         );
 
         // Get latest presale implementation from factory
-        (
-            address daoImpl,
-            address tokenImpl,
-            address treasuryImpl,
-            address stakingImpl,
-            address presaleImpl
-        ) = IDAOFactory(core.factory).getImplementation("latest");
-
+        address presaleImpl = IDAOFactory(core.factory).getModuleImplementation(
+            IDAOModule.ModuleType.Presale,
+            IDAOFactory(core.factory).getLatestModuleVersion(IDAOModule.ModuleType.Presale)
+        );
         require(presaleImpl != address(0), "No presale implementation");
 
         // Deploy presale proxy
@@ -155,9 +184,8 @@ abstract contract DAOExecutor is DAOProposals, IDAOExecutor {
             address daoImpl,
             address tokenImpl,
             address treasuryImpl,
-            address stakingImpl,
-            address presaleImpl
-        ) = IDAOFactory(core.factory).getImplementation(uData.newVersion);
+            address stakingImpl
+        ) = IDAOFactory(core.factory).getCoreImplementation(uData.newVersion);
 
         // Verify implementations match what was proposed
         require(
@@ -213,14 +241,7 @@ abstract contract DAOExecutor is DAOProposals, IDAOExecutor {
         require(recipient != address(0), "Zero recipient");
         require(amount > 0, "Zero amount");
 
-        if (token == address(0)) {
-            IDAOTreasury(core.upgradeableContracts[IDAOBase.UpgradeableContract.Treasury])
-                .transferETH(payable(recipient), amount);
-        } else {
-            IDAOTreasury(core.upgradeableContracts[IDAOBase.UpgradeableContract.Treasury])
-                .transferERC20(token, recipient, amount);
-        }
-
+        _executeTransferFromTreasury(token, recipient, amount);
         DAOEvents.emitEmergencyWithdraw(token, recipient, amount);
     }
 }

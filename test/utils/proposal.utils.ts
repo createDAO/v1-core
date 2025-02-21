@@ -7,6 +7,7 @@ import { expect } from "chai";
 export enum ProposalType {
   Transfer,
   Upgrade,
+  ModuleUpgrade,
   Presale,
   PresalePause,
   PresaleWithdraw,
@@ -18,8 +19,7 @@ export enum UpgradeableContract {
   DAO,
   Token,
   Treasury,
-  Staking,
-  Presale
+  Staking
 }
 
 export async function createAndExecuteProposal(

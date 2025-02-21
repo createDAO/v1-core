@@ -67,7 +67,7 @@ contract DAO is DAOProposals, DAOExecutor {
         // Initialize governance parameters
         core.votingPeriod = 3 days;
         core.minProposalStake = 1e18; // 1 token
-        core.quorum = 1000; // 10%
+        core.quorum = 5000; // 50%
     }
 
     string private constant VERSION = "1.0.0";

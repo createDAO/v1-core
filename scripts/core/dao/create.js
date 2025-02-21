@@ -22,7 +22,7 @@ async function main(params = {}) {
   const factory = DAOFactory.attach(factoryAddress);
   const latestVersion = await factory.getLatestVersion();
   console.log("Latest version from proxy:", latestVersion);
-  const [daoImpl, tokenImpl, treasuryImpl, stakingImpl] = await factory.getImplementation(latestVersion);
+  const [daoImpl, tokenImpl, treasuryImpl, stakingImpl] = await factory.getCoreImplementation(latestVersion);
   
   console.log("\nRegistered implementations:");
   console.log("- DAO:", daoImpl);

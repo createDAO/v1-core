@@ -24,6 +24,7 @@ import "./DAOProxy.sol";
 import "./DAOTokenProxy.sol";
 import "./DAOTreasuryProxy.sol";
 import "./DAOStakingProxy.sol";
+import "./core/interfaces/IDAOModule.sol";
 
 /**
  * @title DAOFactory
@@ -45,20 +46,44 @@ contract DAOFactory is Initializable, UUPSUpgradeable, OwnableUpgradeable {
      * - Only append new variables at the end
      * - Leave enough gap for future storage variables
      */
-    struct DAOImplementation {
+    struct CoreImplementation {
         address daoImplementation;
         address tokenImplementation;
         address treasuryImplementation;
         address stakingImplementation;
-        address presaleImplementation;
         bytes initializationTemplate;
-        bool active;
+    }
+
+    /**
+     * @dev Checks if a version is the latest registered version
+     * @param versionId The version to check
+     * @return bool True if this is the latest version
+     */
+    function _isLatestVersion(string memory versionId) internal view returns (bool) {
+        DAOFactoryStorage storage $ = _getStorage();
+        if ($.availableVersions.length == 0) return false;
+        
+        string memory latestVersion = $.availableVersions[$.availableVersions.length - 1];
+        return keccak256(abi.encodePacked(versionId)) == keccak256(abi.encodePacked(latestVersion));
+    }
+
+    struct ModuleImplementation {
+        address implementation;
     }
 
     /// @custom:storage-location erc7201:dao.factory.storage
     struct DAOFactoryStorage {
-        mapping(string => DAOImplementation) implementations; // version -> implementations
+        // Core DAO implementations
+        mapping(string => CoreImplementation) coreImplementations;
+        
+        // Module implementations by type and version
+        mapping(IDAOModule.ModuleType => mapping(string => ModuleImplementation)) moduleImplementations;
+        
+        // Available versions for core implementations
         string[] availableVersions;
+        
+        // Track available versions for each module type
+        mapping(IDAOModule.ModuleType => string[]) moduleVersions;
     }
 
     // keccak256(abi.encode(uint256(keccak256("dao.factory.storage")) - 1)) & ~bytes32(uint256(0xff))
@@ -81,7 +106,13 @@ contract DAOFactory is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         string versionId
     );
 
-    event ImplementationRegistered(string versionId, address implementation);
+    event CoreImplementationRegistered(string versionId, address daoImpl);
+    event ModuleImplementationRegistered(
+        IDAOModule.ModuleType indexed moduleType,
+        string versionId,
+        address implementation,
+        string moduleTypeName
+    );
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
@@ -94,39 +125,62 @@ contract DAOFactory is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         __UUPSUpgradeable_init();
     }
 
-    function registerImplementation(
+    function registerCoreImplementation(
         string calldata versionId,
         address daoImpl,
         address tokenImpl,
         address treasuryImpl,
         address stakingImpl,
-        address presaleImpl,
         bytes calldata initTemplate
     ) external onlyOwner {
         require(daoImpl != address(0), "Zero DAO implementation");
         require(tokenImpl != address(0), "Zero token implementation");
         require(treasuryImpl != address(0), "Zero treasury implementation");
         require(stakingImpl != address(0), "Zero staking implementation");
-        require(presaleImpl != address(0), "Zero presale implementation");
 
         DAOFactoryStorage storage $ = _getStorage();
         require(
-            $.implementations[versionId].daoImplementation == address(0),
+            $.coreImplementations[versionId].daoImplementation == address(0),
             "Version exists"
         );
 
-        $.implementations[versionId] = DAOImplementation({
+        $.coreImplementations[versionId] = CoreImplementation({
             daoImplementation: daoImpl,
             tokenImplementation: tokenImpl,
             treasuryImplementation: treasuryImpl,
             stakingImplementation: stakingImpl,
-            presaleImplementation: presaleImpl,
-            initializationTemplate: initTemplate,
-            active: true
+            initializationTemplate: initTemplate
         });
 
         $.availableVersions.push(versionId);
-        emit ImplementationRegistered(versionId, daoImpl);
+        emit CoreImplementationRegistered(versionId, daoImpl);
+    }
+
+    function registerModuleImplementation(
+        IDAOModule.ModuleType moduleType,
+        string calldata versionId,
+        address implementation
+    ) external onlyOwner {
+        require(implementation != address(0), "Zero implementation");
+
+        DAOFactoryStorage storage $ = _getStorage();
+        require(
+            $.moduleImplementations[moduleType][versionId].implementation == address(0),
+            "Version exists"
+        );
+
+        $.moduleImplementations[moduleType][versionId] = ModuleImplementation({
+            implementation: implementation
+        });
+
+        // Track version for this module type
+        $.moduleVersions[moduleType].push(versionId);
+        emit ModuleImplementationRegistered(
+            moduleType,
+            versionId,
+            implementation,
+            moduleTypeToString(moduleType)
+        );
     }
 
     function createDAO(
@@ -144,9 +198,8 @@ contract DAOFactory is Initializable, UUPSUpgradeable, OwnableUpgradeable {
             address stakingAddress
         )
     {
-        DAOFactoryStorage storage $ = _getStorage();
-        DAOImplementation storage impl = $.implementations[versionId];
-        require(impl.active, "Version not active");
+        require(_isLatestVersion(versionId), "Only latest version is active");
+        CoreImplementation storage impl = _getStorage().coreImplementations[versionId];
 
         // Deploy token proxy
         bytes memory tokenInit = abi.encodeWithSelector(
@@ -230,7 +283,7 @@ contract DAOFactory is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         return $.availableVersions[length - 1];
     }
 
-    function getImplementation(
+    function getCoreImplementation(
         string calldata versionId
     )
         external
@@ -239,20 +292,53 @@ contract DAOFactory is Initializable, UUPSUpgradeable, OwnableUpgradeable {
             address daoImpl,
             address tokenImpl,
             address treasuryImpl,
-            address stakingImpl,
-            address presaleImpl
+            address stakingImpl
         )
     {
-        DAOImplementation storage impl = _getStorage().implementations[
-            versionId
-        ];
+        CoreImplementation storage impl = _getStorage().coreImplementations[versionId];
         return (
             impl.daoImplementation,
             impl.tokenImplementation,
             impl.treasuryImplementation,
-            impl.stakingImplementation,
-            impl.presaleImplementation
+            impl.stakingImplementation
         );
+    }
+
+    function getModuleImplementation(
+        IDAOModule.ModuleType moduleType,
+        string calldata versionId
+    ) external view returns (address implementation) {
+        DAOFactoryStorage storage $ = _getStorage();
+        string[] storage versions = $.moduleVersions[moduleType];
+        require(versions.length > 0, "No versions for module");
+        
+        // Check if this is the latest version
+        string memory latestVersion = versions[versions.length - 1];
+        require(
+            keccak256(abi.encodePacked(versionId)) == keccak256(abi.encodePacked(latestVersion)),
+            "Only latest version is active"
+        );
+        
+        return $.moduleImplementations[moduleType][versionId].implementation;
+    }
+
+    function moduleTypeToString(IDAOModule.ModuleType moduleType) public pure returns (string memory) {
+        if (moduleType == IDAOModule.ModuleType.Presale) return "presale";
+        if (moduleType == IDAOModule.ModuleType.Vesting) return "vesting";
+        revert("Unknown module type");
+    }
+
+    function getModuleVersions(IDAOModule.ModuleType moduleType) 
+        external view returns (string[] memory) {
+        return _getStorage().moduleVersions[moduleType];
+    }
+
+    function getLatestModuleVersion(IDAOModule.ModuleType moduleType) 
+        external view returns (string memory) {
+        DAOFactoryStorage storage $ = _getStorage();
+        string[] storage versions = $.moduleVersions[moduleType];
+        require(versions.length > 0, "No versions for module");
+        return versions[versions.length - 1];
     }
 
     function getAvailableVersions() external view returns (string[] memory) {

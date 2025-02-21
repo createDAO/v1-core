@@ -40,13 +40,12 @@ export async function deployImplementationsFixture() {
   ]);
   
   // Register implementations
-  await factory.registerImplementation(
+  await factory.registerCoreImplementation(
     "1.0.0",
     await daoImpl.getAddress(),
     await tokenImpl.getAddress(),
     await treasuryImpl.getAddress(),
     await stakingImpl.getAddress(),
-    await presaleImpl.getAddress(),
     "0x" // Empty initialization template
   );
   
@@ -56,8 +55,7 @@ export async function deployImplementationsFixture() {
       dao: daoImpl,
       token: tokenImpl,
       treasury: treasuryImpl,
-      staking: stakingImpl,
-      presale: presaleImpl
+      staking: stakingImpl
     },
     owner,
     accounts

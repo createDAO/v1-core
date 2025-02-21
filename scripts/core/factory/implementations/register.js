@@ -9,7 +9,6 @@ async function main(params = {}) {
     TOKEN_IMPL_ADDRESS,
     TREASURY_IMPL_ADDRESS,
     STAKING_IMPL_ADDRESS,
-    PRESALE_IMPL_ADDRESS,
   } = params;
 
   // const FACTORY_PROXY_ADDRESS = "0x6Cf2fCbC483578ee80e3B8802780C20f461DCcFe";
@@ -25,7 +24,6 @@ async function main(params = {}) {
     token: TOKEN_IMPL_ADDRESS,
     treasury: TREASURY_IMPL_ADDRESS,
     staking: STAKING_IMPL_ADDRESS,
-    presale: PRESALE_IMPL_ADDRESS,
   };
 
   for (const [name, address] of Object.entries(addresses)) {
@@ -41,7 +39,6 @@ async function main(params = {}) {
   console.log("Token implementation:", TOKEN_IMPL_ADDRESS);
   console.log("Treasury implementation:", TREASURY_IMPL_ADDRESS);
   console.log("Staking implementation:", STAKING_IMPL_ADDRESS);
-  console.log("Presale implementation:", PRESALE_IMPL_ADDRESS);
   console.log("Version to register:", VERSION);
 
   // // Get the factory contract
@@ -53,13 +50,12 @@ async function main(params = {}) {
 
   // Register the implementations
   console.log("\nRegistering implementations...");
-  const tx = await factory.registerImplementation(
+  const tx = await factory.registerCoreImplementation(
     VERSION,
     DAO_IMPL_ADDRESS,
     TOKEN_IMPL_ADDRESS,
     TREASURY_IMPL_ADDRESS,
     STAKING_IMPL_ADDRESS,
-    PRESALE_IMPL_ADDRESS,
     initTemplate
   );
   await tx.wait();
@@ -75,23 +71,21 @@ async function main(params = {}) {
   console.log("Latest version from proxy:", latestVersion);
 
   // Get implementations for this version
-  const [daoImpl, tokenImpl, treasuryImpl, stakingImpl, presaleImpl] =
-    await factory.getImplementation(latestVersion);
+  const [daoImpl, tokenImpl, treasuryImpl, stakingImpl] =
+    await factory.getCoreImplementation(latestVersion);
 
   console.log("\nRegistered implementations:");
   console.log("- DAO:", daoImpl);
   console.log("- Token:", tokenImpl);
   console.log("- Treasury:", treasuryImpl);
   console.log("- Staking:", stakingImpl);
-  console.log("- Presale:", presaleImpl);
 
   // Verify all addresses match
   const implementationsMatch =
     daoImpl.toLowerCase() === DAO_IMPL_ADDRESS.toLowerCase() &&
     tokenImpl.toLowerCase() === TOKEN_IMPL_ADDRESS.toLowerCase() &&
     treasuryImpl.toLowerCase() === TREASURY_IMPL_ADDRESS.toLowerCase() &&
-    stakingImpl.toLowerCase() === STAKING_IMPL_ADDRESS.toLowerCase() &&
-    presaleImpl.toLowerCase() === PRESALE_IMPL_ADDRESS.toLowerCase();
+    stakingImpl.toLowerCase() === STAKING_IMPL_ADDRESS.toLowerCase();
 
   if (implementationsMatch && latestVersion === VERSION) {
     console.log("\n✅ Verification successful!");

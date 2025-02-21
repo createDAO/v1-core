@@ -69,19 +69,31 @@ describe("DAO Proposal Validation", function () {
         const [owner, voter] = accounts;
 
         // First transfer and stake tokens with owner (100 tokens)
-        await transferTokensFromTreasury(dao, token, owner, ethers.parseEther("100"));
-        
+        await transferTokensFromTreasury(
+          dao,
+          token,
+          owner,
+          ethers.parseEther("100")
+        );
+
         // Then transfer and stake tokens with voter (1 token)
-        await transferTokensFromTreasury(dao, token, voter, ethers.parseEther("1"));
+        await transferTokensFromTreasury(
+          dao,
+          token,
+          voter,
+          ethers.parseEther("1")
+        );
         await stakeTokens(dao, staking, token, voter, ethers.parseEther("1"));
         await stakeTokens(dao, staking, token, owner, ethers.parseEther("100"));
 
         // Create proposal with voter (this will be proposal 2)
-        await dao.connect(voter).proposeTransfer(
-          await token.getAddress(),
-          await voter.getAddress(),
-          ethers.parseEther("1")
-        );
+        await dao
+          .connect(voter)
+          .proposeTransfer(
+            await token.getAddress(),
+            await voter.getAddress(),
+            ethers.parseEther("1")
+          );
 
         // Vote with only 1% of total staked tokens
         await dao.connect(voter).vote(2, true);
@@ -163,7 +175,6 @@ describe("DAO Proposal Validation", function () {
           voter1,
           ethers.parseEther("5")
         );
-        await stakeTokens(dao, staking, token, voter1, ethers.parseEther("5"));
 
         // Then transfer and stake for voter2
         await transferTokensFromTreasury(
@@ -172,6 +183,8 @@ describe("DAO Proposal Validation", function () {
           voter2,
           ethers.parseEther("5")
         );
+        await stakeTokens(dao, staking, token, voter1, ethers.parseEther("5"));
+
         await stakeTokens(dao, staking, token, voter2, ethers.parseEther("5"));
 
         // Create new proposal (this will be proposal 2 since transferTokensFromTreasury used 0 and 1)
@@ -183,10 +196,13 @@ describe("DAO Proposal Validation", function () {
             ethers.parseEther("1")
           );
 
-        // Split votes 50/50 on proposal 2
-        await dao.connect(voter1).vote(2, true); // 5% for
-        await dao.connect(voter2).vote(2, false); // 5% against
+        await dao.connect(voter1).vote(2, true); // 5 tokens for
+        await dao.connect(voter2).vote(2, false); // 5 tokens against
         await advanceToEndOfVotingPeriod();
+
+        // Get proposal state
+        const proposal = await dao.getProposal(2);
+
         // Should reach quorum (10% total votes) but fail due to no majority
         await expect(dao.execute(2)).to.be.revertedWith("Proposal rejected");
       });
