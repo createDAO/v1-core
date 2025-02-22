@@ -2,6 +2,17 @@
 
 A comprehensive DAO creation and management platform built on Ethereum. This platform allows users to easily deploy and manage Decentralized Autonomous Organizations (DAOs) with features like governance, token management, staking, and presale capabilities.
 
+### Test Reports
+
+View the latest test results, coverage reports, and gas usage analysis at:
+https://reports.createdao.org
+
+The reports include:
+- Test execution results and statistics
+- Code coverage analysis
+- Gas usage optimization data
+- Contract deployment costs
+
 ## Features
 
 - **DAO Factory**: Create new DAOs with customizable parameters
