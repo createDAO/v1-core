@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Contract Test Results</title>
+    <title>createDAO Smart Contract Test Results</title>
+    <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/styles.css">
     <!-- Add marked.js for markdown parsing -->
@@ -30,6 +31,9 @@
             <h1 class="text-3xl font-bold text-center">Smart Contract Test Results</h1>
             <div class="mt-2 text-sm text-gray-600" id="testTime">
                 Test run at: Loading...
+            </div>
+            <div class="mt-1 text-sm text-gray-600" id="commitInfo">
+                Last commit: Loading...
             </div>
         </div>
 
@@ -378,14 +382,24 @@
             }
         }
 
-        // Function to update test time
+        // Function to update test time and commit info
         function updateTestTime() {
             const testTimeElement = document.getElementById('testTime');
-            const content = loadFileContent('data/test-results.json');
-            if (content) {
-                const data = JSON.parse(content);
-                const timestamp = new Date(data.stats.start);
+            const commitInfoElement = document.getElementById('commitInfo');
+            
+            // Load test results
+            const testContent = loadFileContent('data/test-results.json');
+            if (testContent) {
+                const testData = JSON.parse(testContent);
+                const timestamp = new Date(testData.stats.start);
                 testTimeElement.textContent = `Test run at: ${timestamp.toLocaleString()}`;
+            }
+            
+            // Load commit info
+            const commitContent = loadFileContent('data/commit-info.json');
+            if (commitContent) {
+                const commitData = JSON.parse(commitContent);
+                commitInfoElement.textContent = `Last commit: ${commitData.hash.substring(0, 7)} - ${commitData.message}`;
             }
         }
 
