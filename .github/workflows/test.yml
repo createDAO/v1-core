@@ -10,6 +10,9 @@ jobs:
     environment:
       name: Test Reports
       url: ${{ steps.deploy.outputs.production_url }}
+    environment:
+      name: Test Reports
+      url: ${{ steps.deploy.outputs.production_url }}
 
     steps:
     - uses: actions/checkout@v3

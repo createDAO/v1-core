@@ -8,6 +8,7 @@ import "./interfaces/IDAOProposals.sol";
 import "./interfaces/IDAOStaking.sol";
 import "./interfaces/IDAOFactory.sol";
 import "./interfaces/IDAOModule.sol";
+import "./interfaces/IDAOModule.sol";
 import "./storage/CoreStorage.sol";
 import "./storage/ProposalStorage.sol";
 import "./internal/DAOEvents.sol";
@@ -27,6 +28,7 @@ abstract contract DAOProposals is Initializable, UUPSUpgradeable, OwnableUpgrade
     }
 
     function _validateAndInitializeProposal() internal returns (uint256 proposalId) {
+    function _validateAndInitializeProposal() internal returns (uint256 proposalId) {
         CoreStorage.Layout storage core = _getCore();
         ProposalStorage.Layout storage proposals = _getProposals();
 
@@ -38,8 +40,64 @@ abstract contract DAOProposals is Initializable, UUPSUpgradeable, OwnableUpgrade
         );
 
         proposalId = proposals.proposalCount++;
+        proposalId = proposals.proposalCount++;
         ProposalStorage.Proposal storage proposal = proposals.proposals[proposalId];
         proposal.endTime = block.timestamp + core.votingPeriod;
+        
+        return proposalId;
+    }
+
+    function proposeModuleUpgrade(
+        IDAOModule.ModuleType moduleType,
+        address moduleAddress,
+        string calldata newVersion
+    ) external whenNotPaused returns (uint256) {
+        require(moduleAddress != address(0), "Zero module address");
+
+        CoreStorage.Layout storage core = _getCore();
+        ProposalStorage.Layout storage proposals = _getProposals();
+
+        // Verify new implementation exists
+        address newImpl = IDAOFactory(core.factory).getModuleImplementation(moduleType, newVersion);
+        require(newImpl != address(0), "Invalid version");
+
+        uint256 proposalId = _validateAndInitializeProposal();
+        ProposalStorage.Proposal storage proposal = proposals.proposals[proposalId];
+        proposal.proposalType = IDAOBase.ProposalType.ModuleUpgrade;
+
+        // Store module upgrade data
+        proposals.moduleUpgradeData[proposalId].moduleType = moduleType;
+        proposals.moduleUpgradeData[proposalId].moduleAddress = moduleAddress;
+        proposals.moduleUpgradeData[proposalId].newVersion = newVersion;
+
+        DAOEvents.emitProposalCreated(
+            proposalId,
+            IDAOBase.ProposalType.ModuleUpgrade,
+            proposal.endTime
+        );
+        
+        DAOEvents.emitModuleUpgradeProposalCreated(
+            proposalId,
+            moduleType,
+            moduleAddress,
+            newVersion
+        );
+        return proposalId;
+    }
+
+    function proposeTransfer(
+        address token,
+        address recipient,
+        uint256 amount
+    ) external whenNotPaused returns (uint256) {
+        require(recipient != address(0), "Zero recipient");
+        require(amount > 0, "Zero amount");
+
+        ProposalStorage.Layout storage proposals = _getProposals();
+
+        uint256 proposalId = _validateAndInitializeProposal();
+        ProposalStorage.Proposal storage proposal = proposals.proposals[proposalId];
+        proposal.proposalType = IDAOBase.ProposalType.Transfer;
         
         return proposalId;
     }
@@ -109,8 +167,14 @@ abstract contract DAOProposals is Initializable, UUPSUpgradeable, OwnableUpgrade
         
         DAOEvents.emitTransferProposalCreated(
             proposalId,
+            proposal.endTime
+        );
+        
+        DAOEvents.emitTransferProposalCreated(
+            proposalId,
             token,
             recipient,
+            amount
             amount
         );
         return proposalId;
@@ -124,6 +188,7 @@ abstract contract DAOProposals is Initializable, UUPSUpgradeable, OwnableUpgrade
 
         ProposalStorage.Layout storage proposals = _getProposals();
 
+        uint256 proposalId = _validateAndInitializeProposal();
         uint256 proposalId = _validateAndInitializeProposal();
         ProposalStorage.Proposal storage proposal = proposals.proposals[proposalId];
         proposal.proposalType = IDAOBase.ProposalType.PresalePause;
@@ -140,7 +205,13 @@ abstract contract DAOProposals is Initializable, UUPSUpgradeable, OwnableUpgrade
         
         DAOEvents.emitPresalePauseProposalCreated(
             proposalId,
+            proposal.endTime
+        );
+        
+        DAOEvents.emitPresalePauseProposalCreated(
+            proposalId,
             presaleContract,
+            pause
             pause
         );
         return proposalId;
@@ -154,6 +225,7 @@ abstract contract DAOProposals is Initializable, UUPSUpgradeable, OwnableUpgrade
         ProposalStorage.Layout storage proposals = _getProposals();
 
         uint256 proposalId = _validateAndInitializeProposal();
+        uint256 proposalId = _validateAndInitializeProposal();
         ProposalStorage.Proposal storage proposal = proposals.proposals[proposalId];
         proposal.proposalType = IDAOBase.ProposalType.PresaleWithdraw;
 
@@ -163,6 +235,12 @@ abstract contract DAOProposals is Initializable, UUPSUpgradeable, OwnableUpgrade
         DAOEvents.emitProposalCreated(
             proposalId,
             IDAOBase.ProposalType.PresaleWithdraw,
+            proposal.endTime
+        );
+        
+        DAOEvents.emitPresaleWithdrawProposalCreated(
+            proposalId,
+            presaleContract
             proposal.endTime
         );
         
@@ -180,12 +258,14 @@ abstract contract DAOProposals is Initializable, UUPSUpgradeable, OwnableUpgrade
         require(!core.paused, "Already paused");
 
         uint256 proposalId = _validateAndInitializeProposal();
+        uint256 proposalId = _validateAndInitializeProposal();
         ProposalStorage.Proposal storage proposal = proposals.proposals[proposalId];
         proposal.proposalType = IDAOBase.ProposalType.Pause;
 
         DAOEvents.emitProposalCreated(
             proposalId,
             IDAOBase.ProposalType.Pause,
+            proposal.endTime
             proposal.endTime
         );
         return proposalId;
@@ -198,12 +278,14 @@ abstract contract DAOProposals is Initializable, UUPSUpgradeable, OwnableUpgrade
         require(core.paused, "Not paused");
 
         uint256 proposalId = _validateAndInitializeProposal();
+        uint256 proposalId = _validateAndInitializeProposal();
         ProposalStorage.Proposal storage proposal = proposals.proposals[proposalId];
         proposal.proposalType = IDAOBase.ProposalType.Unpause;
 
         DAOEvents.emitProposalCreated(
             proposalId,
             IDAOBase.ProposalType.Unpause,
+            proposal.endTime
             proposal.endTime
         );
         return proposalId;
@@ -219,6 +301,7 @@ abstract contract DAOProposals is Initializable, UUPSUpgradeable, OwnableUpgrade
         CoreStorage.Layout storage core = _getCore();
         ProposalStorage.Layout storage proposals = _getProposals();
 
+        uint256 proposalId = _validateAndInitializeProposal();
         uint256 proposalId = _validateAndInitializeProposal();
         ProposalStorage.Proposal storage proposal = proposals.proposals[proposalId];
         proposal.proposalType = IDAOBase.ProposalType.Presale;
@@ -238,8 +321,14 @@ abstract contract DAOProposals is Initializable, UUPSUpgradeable, OwnableUpgrade
         
         DAOEvents.emitPresaleProposalCreated(
             proposalId,
+            proposal.endTime
+        );
+        
+        DAOEvents.emitPresaleProposalCreated(
+            proposalId,
             core.upgradeableContracts[IDAOBase.UpgradeableContract.Token],
             tokenAmount,
+            initialPrice
             initialPrice
         );
         return proposalId;
@@ -257,15 +346,31 @@ abstract contract DAOProposals is Initializable, UUPSUpgradeable, OwnableUpgrade
             address treasuryImpl,
             address stakingImpl
         ) = IDAOFactory(core.factory).getCoreImplementation(newVersion);
+            address stakingImpl
+        ) = IDAOFactory(core.factory).getCoreImplementation(newVersion);
 
+        require(daoImpl != address(0), "Invalid version");
+        require(tokenImpl != address(0), "Invalid version");
+        require(treasuryImpl != address(0), "Invalid version");
+        require(stakingImpl != address(0), "Invalid version");
         require(daoImpl != address(0), "Invalid version");
         require(tokenImpl != address(0), "Invalid version");
         require(treasuryImpl != address(0), "Invalid version");
         require(stakingImpl != address(0), "Invalid version");
 
         uint256 proposalId = _validateAndInitializeProposal();
+        uint256 proposalId = _validateAndInitializeProposal();
         ProposalStorage.Proposal storage proposal = proposals.proposals[proposalId];
         proposal.proposalType = IDAOBase.ProposalType.Upgrade;
+
+        // Store all implementations
+        address[] memory newImplementations = new address[](4);
+        newImplementations[0] = daoImpl;
+        newImplementations[1] = tokenImpl;
+        newImplementations[2] = treasuryImpl;
+        newImplementations[3] = stakingImpl;
+
+        proposals.upgradeData[proposalId].newImplementations = newImplementations;
 
         // Store all implementations
         address[] memory newImplementations = new address[](4);
@@ -280,6 +385,12 @@ abstract contract DAOProposals is Initializable, UUPSUpgradeable, OwnableUpgrade
         DAOEvents.emitProposalCreated(
             proposalId,
             IDAOBase.ProposalType.Upgrade,
+            proposal.endTime
+        );
+        
+        DAOEvents.emitUpgradeProposalCreated(
+            proposalId,
+            newImplementations,
             proposal.endTime
         );
         
@@ -316,6 +427,17 @@ abstract contract DAOProposals is Initializable, UUPSUpgradeable, OwnableUpgrade
         DAOEvents.emitVoted(proposalId, msg.sender, support, votingPower);
     }
 
+    function getModuleUpgradeData(uint256 proposalId)
+        external
+        view
+        returns (
+            IDAOModule.ModuleType moduleType,
+            address moduleAddress,
+            string memory newVersion
+        )
+    {
+        ProposalStorage.ModuleUpgradeData storage data = _getProposals().moduleUpgradeData[proposalId];
+        return (data.moduleType, data.moduleAddress, data.newVersion);
     function getModuleUpgradeData(uint256 proposalId)
         external
         view
@@ -364,11 +486,13 @@ abstract contract DAOProposals is Initializable, UUPSUpgradeable, OwnableUpgrade
         view
         returns (
             address[] memory newImplementations,
+            address[] memory newImplementations,
             string memory newVersion
         )
     {
         ProposalStorage.UpgradeData storage data = _getProposals().upgradeData[proposalId];
         return (
+            data.newImplementations,
             data.newImplementations,
             data.newVersion
         );
