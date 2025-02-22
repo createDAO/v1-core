@@ -33,6 +33,7 @@ jobs:
         echo "\"author\": \"$(git log -1 --pretty=%an)\"," >> reports/data/commit-info.json
         echo "\"date\": \"$(git log -1 --pretty=%aI)\"}" >> reports/data/commit-info.json
 
+
     - name: Run tests and generate reports
       run: |
         # Run coverage first to get test results and coverage

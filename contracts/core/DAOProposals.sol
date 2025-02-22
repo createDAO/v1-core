@@ -250,7 +250,6 @@ abstract contract DAOProposals is Initializable, UUPSUpgradeable, OwnableUpgrade
     ) external whenNotPaused returns (uint256) {
         CoreStorage.Layout storage core = _getCore();
         ProposalStorage.Layout storage proposals = _getProposals();
-
         (
             address daoImpl,
             address tokenImpl,

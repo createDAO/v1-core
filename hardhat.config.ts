@@ -68,12 +68,12 @@ if (ETHERSCAN_API_KEY) {
 }
 
 const config: HardhatUserConfig = {
-  // mocha: {
-  //   reporter: 'mocha-json-output-reporter',
-  //   reporterOptions: {
-  //     output: 'reports/data/test-results.json'
-  //   }
-  // },
+  mocha: {
+    reporter: 'mocha-json-output-reporter',
+    reporterOptions: {
+      output: 'reports/data/test-results.json'
+    }
+  },
   gasReporter: {
     enabled: true,
     currency: "USD",
