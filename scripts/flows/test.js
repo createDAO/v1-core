@@ -51,7 +51,6 @@ async function main() {
         tokenAddress: TOKEN_IMPL_ADDRESS,
         treasuryAddress: TREASURY_IMPL_ADDRESS,
         stakingAddress: STAKING_IMPL_ADDRESS,
-        presaleAddress: PRESALE_IMPL_ADDRESS
     } = implAddresses;
     
     // 3. Register implementations
@@ -62,13 +61,12 @@ async function main() {
         TOKEN_IMPL_ADDRESS,
         TREASURY_IMPL_ADDRESS,
         STAKING_IMPL_ADDRESS,
-        PRESALE_IMPL_ADDRESS
     });
 
     // Verify implementations are registered
     console.log("\nVerifying implementation registration...");
-    const [registeredDao, registeredToken, registeredTreasury, registeredStaking, registeredPresale] = 
-        await factoryContract.getImplementation(VERSION);
+    const [registeredDao, registeredToken, registeredTreasury, registeredStaking] = 
+        await factoryContract.getCoreImplementation(VERSION);
 
     console.log("\nChecking registered implementations:");
     
@@ -85,7 +83,6 @@ async function main() {
     checkImpl("Token", registeredToken, TOKEN_IMPL_ADDRESS);
     checkImpl("Treasury", registeredTreasury, TREASURY_IMPL_ADDRESS);
     checkImpl("Staking", registeredStaking, STAKING_IMPL_ADDRESS);
-    checkImpl("Staking", registeredPresale, PRESALE_IMPL_ADDRESS);
     
     console.log("\nAll implementations verified ✅");
 
@@ -103,7 +100,6 @@ async function main() {
     console.log("Token Implementation:", TOKEN_IMPL_ADDRESS);
     console.log("Treasury Implementation:", TREASURY_IMPL_ADDRESS);
     console.log("Staking Implementation:", STAKING_IMPL_ADDRESS);
-    console.log("Presale Implementation:", PRESALE_IMPL_ADDRESS);
 
     // Create a test DAO
     console.log("\n4. Creating Test DAO...");
@@ -169,6 +165,8 @@ async function main() {
             throw new Error("Token balances don't add up to total supply!");
         }
         console.log("Token distribution verified ✅");
+        console.log("Deployer is " + deployer.address);
+        
     } catch (error) {
         console.error("Error verifying DAO proxy:");
         console.error("- Make sure the implementation is correct");

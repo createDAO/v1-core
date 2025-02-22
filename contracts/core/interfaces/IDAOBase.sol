@@ -6,13 +6,13 @@ interface IDAOBase {
         DAO,
         Token,
         Treasury,
-        Staking,
-        Presale
+        Staking
     }
 
     enum ProposalType {
         Transfer,
         Upgrade,
+        ModuleUpgrade,  // New type for module upgrades
         Presale,
         PresalePause,
         PresaleWithdraw,

@@ -2,67 +2,108 @@
 pragma solidity ^0.8.20;
 
 import "../interfaces/IDAOBase.sol";
+import "../interfaces/IDAOEvents.sol";
+import "../interfaces/IDAOModule.sol";
 
 /**
- * @dev Internal library for DAO events
- * This library contains all events used across the DAO system
+ * @title DAOEvents
+ * @dev Library for handling DAO event emissions
+ * Uses events defined in IDAOEvents interface
+ * Provides helper functions for emitting events with proper parameters
  */
 library DAOEvents {
-    // Proposal events
-    event ProposalCreated(
-        uint256 indexed proposalId,
-        IDAOBase.ProposalType proposalType,
-        address token, // For transfer proposals
-        address recipient, // For transfer proposals
-        uint256 amount, // For transfer proposals
-        IDAOBase.UpgradeableContract contractToUpgrade, // For upgrade proposals
-        string newVersion // For upgrade proposals
-    );
-
-    event Voted(
-        uint256 indexed proposalId,
-        address indexed voter,
-        bool support,
-        uint256 votingPower
-    );
-
-    event ProposalExecuted(uint256 indexed proposalId);
-
-    // Presale events
-    event PresaleDeployed(
-        uint256 indexed proposalId,
-        address indexed presaleContract,
-        uint256 tokenAmount,
-        uint256 initialPrice
-    );
-
-    // System events
-    event DAOPaused(address indexed account);
-    event DAOUnpaused(address indexed account);
-    event EmergencyWithdraw(
-        address indexed token,
-        address indexed recipient,
-        uint256 amount
-    );
-
-    // Event emitting functions
+    // Mapping for module type strings to avoid repeated string comparisons
+    // Note: Solidity doesn't support constant mappings, so we'll use a function
+    function _getModuleTypeString(IDAOModule.ModuleType moduleType) private pure returns (string memory) {
+        if (moduleType == IDAOModule.ModuleType.Presale) return "presale";
+        if (moduleType == IDAOModule.ModuleType.Vesting) return "vesting";
+        revert("Unknown module type");
+    }
     function emitProposalCreated(
         uint256 proposalId,
         IDAOBase.ProposalType proposalType,
-        address token,
-        address recipient,
-        uint256 amount,
-        IDAOBase.UpgradeableContract contractToUpgrade,
-        string memory newVersion
+        uint256 endTime
     ) internal {
-        emit ProposalCreated(
+        emit IDAOEvents.ProposalCreated(
             proposalId,
             proposalType,
+            endTime
+        );
+    }
+
+    function emitTransferProposalCreated(
+        uint256 proposalId,
+        address token,
+        address recipient,
+        uint256 amount
+    ) internal {
+        emit IDAOEvents.TransferProposalCreated(
+            proposalId,
             token,
             recipient,
+            amount
+        );
+    }
+
+    function emitPresaleProposalCreated(
+        uint256 proposalId,
+        address token,
+        uint256 amount,
+        uint256 initialPrice
+    ) internal {
+        emit IDAOEvents.PresaleProposalCreated(
+            proposalId,
+            token,
             amount,
-            contractToUpgrade,
-            newVersion
+            initialPrice
+        );
+    }
+
+    function emitPresalePauseProposalCreated(
+        uint256 proposalId,
+        address presaleContract,
+        bool pause
+    ) internal {
+        emit IDAOEvents.PresalePauseProposalCreated(
+            proposalId,
+            presaleContract,
+            pause
+        );
+    }
+
+    function emitPresaleWithdrawProposalCreated(
+        uint256 proposalId,
+        address presaleContract
+    ) internal {
+        emit IDAOEvents.PresaleWithdrawProposalCreated(
+            proposalId,
+            presaleContract
+        );
+    }
+
+    function emitUpgradeProposalCreated(
+        uint256 proposalId,
+        address[] memory newImplementations,
+        string memory version
+    ) internal {
+        emit IDAOEvents.UpgradeProposalCreated(
+            proposalId,
+            newImplementations,
+            version
+        );
+    }
+
+    function emitModuleUpgradeProposalCreated(
+        uint256 proposalId,
+        IDAOModule.ModuleType moduleType,
+        address moduleAddress,
+        string memory version
+    ) internal {
+        emit IDAOEvents.ModuleUpgradeProposalCreated(
+            proposalId,
+            moduleType,
+            moduleAddress,
+            version
         );
     }
 
@@ -72,33 +113,19 @@ library DAOEvents {
         bool support,
         uint256 votingPower
     ) internal {
-        emit Voted(proposalId, voter, support, votingPower);
+        emit IDAOEvents.Voted(proposalId, voter, support, votingPower);
     }
 
     function emitProposalExecuted(uint256 proposalId) internal {
-        emit ProposalExecuted(proposalId);
-    }
-
-    function emitPresaleDeployed(
-        uint256 proposalId,
-        address presaleContract,
-        uint256 tokenAmount,
-        uint256 initialPrice
-    ) internal {
-        emit PresaleDeployed(
-            proposalId,
-            presaleContract,
-            tokenAmount,
-            initialPrice
-        );
+        emit IDAOEvents.ProposalExecuted(proposalId);
     }
 
     function emitDAOPaused(address account) internal {
-        emit DAOPaused(account);
+        emit IDAOEvents.DAOPaused(account);
     }
 
     function emitDAOUnpaused(address account) internal {
-        emit DAOUnpaused(account);
+        emit IDAOEvents.DAOUnpaused(account);
     }
 
     function emitEmergencyWithdraw(
@@ -106,6 +133,39 @@ library DAOEvents {
         address recipient,
         uint256 amount
     ) internal {
-        emit EmergencyWithdraw(token, recipient, amount);
+        emit IDAOEvents.EmergencyWithdraw(token, recipient, amount);
     }
+
+    function emitPresaleDeployed(
+        uint256 proposalId,
+        address presaleContract,
+        uint256 amount,
+        uint256 initialPrice
+    ) internal {
+        emit IDAOEvents.PresaleDeployed(proposalId, presaleContract, amount, initialPrice);
+    }
+
+    function emitModuleUpgraded(
+        uint256 proposalId,
+        address moduleAddress,
+        IDAOModule.ModuleType moduleType,
+        string memory version
+    ) internal {
+        emit IDAOEvents.ModuleUpgraded(
+            proposalId,
+            moduleAddress,
+            moduleTypeToString(moduleType),
+            version
+        );
+    }
+
+    /**
+     * @dev Converts a module type enum to its string representation
+     * @param moduleType The module type to convert
+     * @return The string representation of the module type
+     */
+    function moduleTypeToString(IDAOModule.ModuleType moduleType) internal pure returns (string memory) {
+        return _getModuleTypeString(moduleType);
+    }
+
 }

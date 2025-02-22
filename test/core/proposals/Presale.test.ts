@@ -12,30 +12,15 @@ describe("DAO Presale Proposals", function () {
   async function registerPresaleImplementation() {
     const { factory } = await loadFixture(deployDAOFixture);
 
-    // Deploy new implementations to keep version consistent
-    const daoImpl = await ethers.deployContract("DAO");
-    const tokenImpl = await ethers.deployContract("DAOToken");
-    const treasuryImpl = await ethers.deployContract("DAOTreasury");
-    const stakingImpl = await ethers.deployContract("DAOStaking");
+    // Deploy and register presale module implementation
     const presaleImpl = await ethers.deployContract("DAOPresale");
+    await presaleImpl.waitForDeployment();
 
-    await Promise.all([
-      daoImpl.waitForDeployment(),
-      tokenImpl.waitForDeployment(),
-      treasuryImpl.waitForDeployment(),
-      stakingImpl.waitForDeployment(),
-      presaleImpl.waitForDeployment(),
-    ]);
-
-    // Register new version with presale implementation
-    await factory.registerImplementation(
-      "latest",
-      await daoImpl.getAddress(),
-      await tokenImpl.getAddress(),
-      await treasuryImpl.getAddress(),
-      await stakingImpl.getAddress(),
-      await presaleImpl.getAddress(),
-      "0x" // Empty initialization template
+    // Register presale as a module implementation
+    await factory.registerModuleImplementation(
+      0, // ModuleType.Presale = 0
+      "1.0.0", // Use proper version
+      await presaleImpl.getAddress()
     );
 
     return presaleImpl;

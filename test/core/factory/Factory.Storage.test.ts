@@ -9,14 +9,13 @@ describe("DAOFactory Storage", function() {
       const { factory, implementations } = await loadFixture(deployImplementationsFixture);
       
       // Get implementation data
-      const implData = await factory.getImplementation("1.0.0");
+      const implData = await factory.getCoreImplementation("1.0.0");
       
       // Verify all implementation addresses match
       expect(implData.daoImpl).to.equal(await implementations.dao.getAddress());
       expect(implData.tokenImpl).to.equal(await implementations.token.getAddress());
       expect(implData.treasuryImpl).to.equal(await implementations.treasury.getAddress());
       expect(implData.stakingImpl).to.equal(await implementations.staking.getAddress());
-      expect(implData.presaleImpl).to.equal(await implementations.presale.getAddress());
     });
 
     it("Should maintain storage isolation between different versions", async function() {
@@ -27,30 +26,27 @@ describe("DAOFactory Storage", function() {
       const newTokenImpl = await ethers.deployContract("DAOToken");
       const newTreasuryImpl = await ethers.deployContract("DAOTreasury");
       const newStakingImpl = await ethers.deployContract("DAOStaking");
-      const newPresaleImpl = await ethers.deployContract("DAOPresale");
       
       await Promise.all([
         newDaoImpl.waitForDeployment(),
         newTokenImpl.waitForDeployment(),
         newTreasuryImpl.waitForDeployment(),
         newStakingImpl.waitForDeployment(),
-        newPresaleImpl.waitForDeployment()
       ]);
 
       // Register new version
-      await factory.registerImplementation(
+      await factory.registerCoreImplementation(
         "2.0.0",
         await newDaoImpl.getAddress(),
         await newTokenImpl.getAddress(),
         await newTreasuryImpl.getAddress(),
         await newStakingImpl.getAddress(),
-        await newPresaleImpl.getAddress(),
         "0x"
       );
 
       // Verify both versions maintain their correct implementations
-      const v1Impls = await factory.getImplementation("1.0.0");
-      const v2Impls = await factory.getImplementation("2.0.0");
+      const v1Impls = await factory.getCoreImplementation("1.0.0");
+      const v2Impls = await factory.getCoreImplementation("2.0.0");
 
       expect(v1Impls.daoImpl).to.equal(await implementations.dao.getAddress());
       expect(v2Impls.daoImpl).to.equal(await newDaoImpl.getAddress());
@@ -70,18 +66,16 @@ describe("DAOFactory Storage", function() {
         ethers.deployContract("DAOToken"),
         ethers.deployContract("DAOTreasury"),
         ethers.deployContract("DAOStaking"),
-        ethers.deployContract("DAOPresale")
       ]);
       
       await Promise.all(newImplementations.map(impl => impl.waitForDeployment()));
       
-      await factory.registerImplementation(
+      await factory.registerCoreImplementation(
         "2.0.0",
         await newImplementations[0].getAddress(),
         await newImplementations[1].getAddress(),
         await newImplementations[2].getAddress(),
         await newImplementations[3].getAddress(),
-        await newImplementations[4].getAddress(),
         "0x"
       );
       
@@ -119,9 +113,8 @@ describe("DAOFactory Storage", function() {
     it("Should prevent zero address implementations", async function() {
       const { factory } = await loadFixture(deployFactoryFixture);
       
-      await expect(factory.registerImplementation(
+      await expect(factory.registerCoreImplementation(
         "2.0.0",
-        ethers.ZeroAddress,
         ethers.ZeroAddress,
         ethers.ZeroAddress,
         ethers.ZeroAddress,
@@ -133,13 +126,12 @@ describe("DAOFactory Storage", function() {
     it("Should prevent registering same version twice", async function() {
       const { factory, implementations } = await loadFixture(deployImplementationsFixture);
       
-      await expect(factory.registerImplementation(
+      await expect(factory.registerCoreImplementation(
         "1.0.0", // Try to register same version again
         await implementations.dao.getAddress(),
         await implementations.token.getAddress(),
         await implementations.treasury.getAddress(),
         await implementations.staking.getAddress(),
-        await implementations.presale.getAddress(),
         "0x"
       )).to.be.revertedWith("Version exists");
     });
@@ -148,13 +140,12 @@ describe("DAOFactory Storage", function() {
       const { factory, implementations } = await loadFixture(deployImplementationsFixture);
       const [, nonOwner] = await ethers.getSigners();
       
-      await expect(factory.connect(nonOwner).registerImplementation(
+      await expect(factory.connect(nonOwner).registerCoreImplementation(
         "2.0.0",
         await implementations.dao.getAddress(),
         await implementations.token.getAddress(),
         await implementations.treasury.getAddress(),
         await implementations.staking.getAddress(),
-        await implementations.presale.getAddress(),
         "0x"
       )).to.be.revertedWithCustomError(factory, "OwnableUnauthorizedAccount");
     });
@@ -175,17 +166,16 @@ describe("DAOFactory Storage", function() {
     it("Should handle empty initialization data", async function() {
       const { factory, implementations } = await loadFixture(deployImplementationsFixture);
       
-      await factory.registerImplementation(
+      await factory.registerCoreImplementation(
         "empty.init",
         await implementations.dao.getAddress(),
         await implementations.token.getAddress(),
         await implementations.treasury.getAddress(),
         await implementations.staking.getAddress(),
-        await implementations.presale.getAddress(),
         "0x"
       );
 
-      const impls = await factory.getImplementation("empty.init");
+      const impls = await factory.getCoreImplementation("empty.init");
       expect(impls.daoImpl).to.equal(await implementations.dao.getAddress());
     });
 

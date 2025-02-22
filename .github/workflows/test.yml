@@ -1,8 +1,6 @@
 name: Test Smart Contracts
 
 on:
-  push:
-    branches: [ main, master ]
   pull_request:
     branches: [ main, master ]
 
@@ -26,7 +24,15 @@ jobs:
       run: npm ci --legacy-peer-deps
       
     - name: Create reports directory
-      run: mkdir -p reports/data reports/assets/js reports/assets/css
+      run: mkdir -p reports/data reports/assets/js reports/assets/css reports/assets/img
+
+    - name: Get commit info
+      run: |
+        echo "{\"hash\": \"$(git rev-parse HEAD)\"," > reports/data/commit-info.json
+        echo "\"message\": \"$(git log -1 --pretty=%B)\"," >> reports/data/commit-info.json
+        echo "\"author\": \"$(git log -1 --pretty=%an)\"," >> reports/data/commit-info.json
+        echo "\"date\": \"$(git log -1 --pretty=%aI)\"}" >> reports/data/commit-info.json
+
 
     - name: Run tests and generate reports
       run: |
@@ -44,7 +50,7 @@ jobs:
         # Process gas report
         node reports/assets/js/gas-report-parser.js
 
-    - name: Deploy to Vercel
+    - name: Publish Reports
       if: success()
       id: deploy
       env:

@@ -126,7 +126,7 @@ describe("DAOFactory Creation", function() {
         "Test Token",
         "TEST",
         ethers.parseEther("1000000")
-      )).to.be.revertedWith("Version not active");
+      )).to.be.revertedWith("Only latest version is active");
     });
 
     it("Should distribute initial token supply correctly", async function() {

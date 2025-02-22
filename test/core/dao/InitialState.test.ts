@@ -37,7 +37,7 @@ describe("DAO Initial State", function() {
       
       expect(await dao.votingPeriod()).to.equal(3 * 24 * 60 * 60); // 3 days
       expect(await dao.minProposalStake()).to.equal(ethers.parseEther("1")); // 1 token
-      expect(await dao.quorum()).to.equal(1000); // 10%
+      expect(await dao.quorum()).to.equal(5000); // 10%
     });
 
     it("Should allow creator to stake initial token and create proposal", async function() {
@@ -52,15 +52,12 @@ describe("DAO Initial State", function() {
         await token.getAddress(),
         await owner.getAddress(),
         transferAmount
-      )).to.emit(dao, "ProposalCreated")
+      )).to.emit(dao, "TransferProposalCreated")
         .withArgs(
           0, // proposalId
-          0, // ProposalType.Transfer
           await token.getAddress(),
           await owner.getAddress(),
-          transferAmount,
-          0, // contractToUpgrade (not used for transfer)
-          "" // newVersion (not used for transfer)
+          transferAmount
         );
     });
   });

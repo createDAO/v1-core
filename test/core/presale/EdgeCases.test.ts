@@ -1,65 +1,9 @@
 import { loadFixture, time } from "@nomicfoundation/hardhat-toolbox/network-helpers";
 import { expect } from "chai";
-import { deployDAOFixture } from "../../fixtures/dao.fixture";
+import { deployPresaleFixture } from "../../fixtures/presale.fixture";
 import { ethers } from "hardhat";
-import { stakeTokens } from "../../utils/token.utils";
 import { advanceToEndOfVotingPeriod } from "../../utils/time.utils";
 import { DAOPresale } from "../../../typechain-types";
-
-// Reuse the same fixture from BasicOperations
-async function deployPresaleFixture() {
-  const daoFixture = await loadFixture(deployDAOFixture);
-  const { dao, staking, token, treasury, owner } = daoFixture;
-
-  const presaleImpl = await ethers.deployContract("DAOPresale");
-  await presaleImpl.waitForDeployment();
-
-  await daoFixture.factory.registerImplementation(
-    "latest",
-    await daoFixture.dao.getAddress(),
-    await token.getAddress(),
-    await treasury.getAddress(),
-    await staking.getAddress(),
-    await presaleImpl.getAddress(),
-    "0x"
-  );
-
-  await stakeTokens(dao, staking, token, owner, ethers.parseEther("1"));
-  const totalStaked = await staking.totalStaked();
-  const neededVotes = (totalStaked * 1000n) / 10000n + 1n;
-
-  await dao.proposeTransfer(
-    await token.getAddress(),
-    await owner.getAddress(),
-    neededVotes
-  );
-  await dao.vote(0, true);
-  await advanceToEndOfVotingPeriod();
-  await dao.execute(0);
-
-  await token.approve(await staking.getAddress(), neededVotes);
-  await staking.stake(neededVotes);
-
-  const presaleAmount = ethers.parseEther("100000");
-  const initialPrice = ethers.parseEther("0.001");
-
-  await dao.proposePresale(presaleAmount, initialPrice);
-  await dao.vote(1, true);
-  await advanceToEndOfVotingPeriod();
-  await dao.execute(1);
-
-  const presaleAddress = await dao.getPresaleContract(1);
-  const presale = await ethers.getContractAt("DAOPresale", presaleAddress);
-  const tokensPerTier = await presale.tokensPerTier();
-
-  return {
-    ...daoFixture,
-    presale,
-    presaleAmount,
-    initialPrice,
-    tokensPerTier
-  };
-}
 
 describe("DAOPresale Edge Cases", function () {
   describe("Zero Value Handling", function () {

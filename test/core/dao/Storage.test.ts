@@ -14,7 +14,7 @@ describe("DAO Storage", function () {
         expect(await dao.factory()).to.equal(await factory.getAddress());
         expect(await dao.votingPeriod()).to.equal(3 * 24 * 60 * 60); // 3 days
         expect(await dao.minProposalStake()).to.equal(ethers.parseEther("1")); // 1 token
-        expect(await dao.quorum()).to.equal(1000); // 10%
+        expect(await dao.quorum()).to.equal(5000); // 10%
         expect(await dao.paused()).to.equal(false);
 
         // Upgradeable contracts storage

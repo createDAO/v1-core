@@ -40,15 +40,6 @@ async function main() {
   console.log("Staking implementation deployed to:", stakingAddress);
   await verify(stakingAddress, []);
 
-  // Deploy Presale implementation
-  console.log("\nDeploying Presale implementation...");
-  const DAOPresale = await ethers.getContractFactory("DAOPresale");
-  const presale = await DAOPresale.deploy();
-  await presale.waitForDeployment();
-  const presaleAddress = await presale.getAddress();
-  console.log("Presale implementation deployed to:", presaleAddress);
-  await verify(presaleAddress, []);
-
   console.log("\n✅ All implementations deployed successfully!");
 
   // Return addresses for use in other scripts
@@ -57,7 +48,6 @@ async function main() {
     tokenAddress,
     treasuryAddress,
     stakingAddress,
-    presaleAddress,
   };
 }
 

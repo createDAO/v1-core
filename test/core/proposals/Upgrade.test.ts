@@ -30,13 +30,12 @@ describe("DAO Upgrade Proposals", function () {
     const newStakingImpl = await StakingV2Factory.deploy();
 
     // Register new version
-    await factory.registerImplementation(
+    await factory.registerCoreImplementation(
       "2.0.0",
       await newDAOImpl.getAddress(),
       await newTokenImpl.getAddress(),
       await newTreasuryImpl.getAddress(),
       await newStakingImpl.getAddress(),
-      await staking.getAddress(), // Keep old presale impl
       "0x"
     );
 
@@ -81,13 +80,12 @@ describe("DAO Upgrade Proposals", function () {
     const newStakingImpl = await StakingV2Factory.deploy();
 
     // Register new version
-    await factory.registerImplementation(
+    await factory.registerCoreImplementation(
       "2.0.0",
       await newDAOImpl.getAddress(),
       await newTokenImpl.getAddress(),
       await newTreasuryImpl.getAddress(),
       await newStakingImpl.getAddress(),
-      await staking.getAddress(), // Keep old presale impl
       "0x"
     );
 
@@ -151,13 +149,12 @@ describe("DAO Upgrade Proposals", function () {
     const newTreasuryImpl = await TreasuryV2Factory.deploy();
     const newStakingImpl = await StakingV2Factory.deploy();
 
-    await factory.registerImplementation(
+    await factory.registerCoreImplementation(
       "2.0.0",
       await newDAOImpl.getAddress(),
       await newTokenImpl.getAddress(),
       await newTreasuryImpl.getAddress(),
       await newStakingImpl.getAddress(),
-      await staking.getAddress(), // Keep old presale impl
       "0x"
     );
     await token.transfer(otherAccount.address, MIN_PROPOSAL_STAKE);
@@ -191,13 +188,12 @@ describe("DAO Upgrade Proposals", function () {
     const newTreasuryImpl = await TreasuryV2Factory.deploy();
     const newStakingImpl = await StakingV2Factory.deploy();
 
-    await factory.registerImplementation(
+    await factory.registerCoreImplementation(
       "2.0.0",
       await newDAOImpl.getAddress(),
       await newTokenImpl.getAddress(),
       await newTreasuryImpl.getAddress(),
       await newStakingImpl.getAddress(),
-      await staking.getAddress(), // Keep old presale impl
       "0x"
     );
 
@@ -227,13 +223,12 @@ describe("DAO Upgrade Proposals", function () {
     const newTreasuryImpl = await TreasuryV2Factory.deploy();
     const newStakingImpl = await StakingV2Factory.deploy();
 
-    await factory.registerImplementation(
+    await factory.registerCoreImplementation(
       "2.0.0",
       await newDAOImpl.getAddress(),
       await newTokenImpl.getAddress(),
       await newTreasuryImpl.getAddress(),
       await newStakingImpl.getAddress(),
-      await staking.getAddress(), // Keep old presale impl
       "0x"
     );
 
@@ -301,13 +296,12 @@ describe("DAO Upgrade Proposals", function () {
     const newTreasuryImpl = await TreasuryV2Factory.deploy();
     const newStakingImpl = await StakingV2Factory.deploy();
 
-    await factory.registerImplementation(
+    await factory.registerCoreImplementation(
       "2.0.0",
       await newDAOImpl.getAddress(),
       await newTokenImpl.getAddress(),
       await newTreasuryImpl.getAddress(),
       await newStakingImpl.getAddress(),
-      await staking.getAddress(), // Keep old presale impl
       "0x"
     );
 
@@ -340,13 +334,12 @@ describe("DAO Upgrade Proposals", function () {
     const newTreasuryImpl = await TreasuryV2Factory.deploy();
     const newStakingImpl = await StakingV2Factory.deploy();
 
-    await factory.registerImplementation(
+    await factory.registerCoreImplementation(
       "2.0.0",
       await newDAOImpl.getAddress(),
       await newTokenImpl.getAddress(),
       await newTreasuryImpl.getAddress(),
       await newStakingImpl.getAddress(),
-      await staking.getAddress(), // Keep old presale impl
       "0x"
     );
 
