@@ -1,17 +1,23 @@
 // SPDX-License-Identifier: BSL-1.1
-//   _____          ____  _____                     _                  _ 
-//  |  __ \   /\   / __ \|  __ \                   | |                | |
-//  | |  | | /  \ | |  | | |__) | __ ___  ___  __ _| | ___   ___  ___ | |
-//  | |  | |/ /\ \| |  | |  ___/ '__/ _ \/ __|/ _` | |/ _ \ / __|/ _ \| |
-//  | |__| / ____ \ |__| | |   | | |  __/\__ \ (_| | |  __/_\__ \ (_) | |
-//  |_____/_/    \_\____/|_|   |_|  \___||___/\__,_|_|\___(_)___/\___/|_|    
-//  deployed by createDAO.org for main DAO implementation
-
-// Hey! This code is for mother Earth's prosperity. Feel free to learn from it,
-// but I'm tired of cheapskate copycats deploying clones to make quick cash
-// without adding any value. That's why it's BSL licensed for 4 years.
-// After that, it's all yours. Peace ✌️
-// Diornov
+//   _____          ____       _____  _____  ______  _____         _      ______ 
+//  |  __ \   /\   / __ \     |  __ \|  __ \|  ____|/ ____|  /\   | |    |  ____|
+//  | |  | | /  \ | |  | |    | |__) | |__) | |__  | (___   /  \  | |    | |__   
+//  | |  | |/ /\ \| |  | |    |  ___/|  _  /|  __|  \___ \ / /\ \ | |    |  __|  
+//  | |__| / ____ \ |__| |    | |    | | \ \| |____ ____) / ____ \| |____| |____ 
+//  |_____/_/    \_\____/     |_|    |_|  \_\______|_____/_/    \_\______|______|
+//                                                                                         
+//                                                                                         
+//  deployed by createDAO.org for main DAO presale implementation
+//
+// Hey there! 🌍 This code is dedicated to building a better, greener future. 
+// Feel free to study and learn from it. But hey, no lazy copy-paste clones for 
+// quick profit without real innovation, okay? That's why it's licensed under 
+// the Business Source License 1.1 (BUSL-1.1) for 4 years.
+// After that, it’s open for everyone. Build something meaningful. ✌️
+// — Diornov
+//
+//
+//
 pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
@@ -197,7 +203,6 @@ contract DAOPresale is Initializable, UUPSUpgradeable {
 
     function getRemainingInCurrentTier() public view returns (uint256) {
         uint256 tokensSold = getTokensSold();
-        uint256 currentTier = getCurrentTier();
         uint256 soldInCurrentTier = tokensSold % tokensPerTier;
         return tokensPerTier - soldInCurrentTier;
     }
@@ -304,8 +309,8 @@ contract DAOPresale is Initializable, UUPSUpgradeable {
     }
 
     function _authorizeUpgrade(
-        address newImplementation
-    ) internal override {
+        address
+    ) internal override view {
         require(msg.sender == dao, "Only DAO");
     }
 

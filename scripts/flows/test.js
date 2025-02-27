@@ -7,6 +7,8 @@ const { main: deployFactory } = require("../core/factory/deploy.js");
 const { main: deployImplementations } = require("../core/factory/implementations/deploy.js");
 const { main: registerImplementations } = require("../core/factory/implementations/register.js");
 const { main: createDAO } = require("../core/dao/create.js");
+const { main: deployPresale } = require("../core/presale/deploy.js");
+const { main: registerPresale } = require("../core/presale/register.js");
 
 async function main() {
     console.log("Starting complete deployment process...");
@@ -93,16 +95,38 @@ async function main() {
     }
     console.log("Version registration verified ✅");
 
-    console.log("\n✅ Complete deployment successful!");
-    console.log("\nDeployed Addresses:");
+    console.log("\n✅ Core implementations deployment successful!");
+    console.log("\nDeployed Core Addresses:");
     console.log("Factory Proxy:", FACTORY_PROXY_ADDRESS);
     console.log("DAO Implementation:", DAO_IMPL_ADDRESS);
     console.log("Token Implementation:", TOKEN_IMPL_ADDRESS);
     console.log("Treasury Implementation:", TREASURY_IMPL_ADDRESS);
     console.log("Staking Implementation:", STAKING_IMPL_ADDRESS);
 
+    // 4. Deploy DAOPresale implementation
+    console.log("\n4. Deploying DAOPresale implementation...");
+    const PRESALE_IMPL_ADDRESS = await deployPresale();
+    console.log("DAOPresale Implementation:", PRESALE_IMPL_ADDRESS);
+
+    // 5. Register DAOPresale as a module
+    console.log("\n5. Registering DAOPresale as a module...");
+    await registerPresale({
+        FACTORY_PROXY_ADDRESS,
+        PRESALE_IMPL_ADDRESS,
+    });
+
+    // Verify presale module registration
+    console.log("\nVerifying presale module registration...");
+    const presaleImpl = await factoryContract.getModuleImplementation(0, VERSION); // 0 = Presale
+    
+    console.log("Presale implementation:", presaleImpl);
+    if (presaleImpl.toLowerCase() !== PRESALE_IMPL_ADDRESS.toLowerCase()) {
+        throw new Error("Presale implementation mismatch!");
+    }
+    console.log("Presale module registration verified ✅");
+
     // Create a test DAO
-    console.log("\n4. Creating Test DAO...");
+    console.log("\n6. Creating Test DAO...");
     const daoAddresses = await createDAO({
         factoryAddress: FACTORY_PROXY_ADDRESS,
         name: "Test DAO",
