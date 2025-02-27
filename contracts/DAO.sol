@@ -1,17 +1,24 @@
 // SPDX-License-Identifier: BSL-1.1
-//   _____          ____    _____  ____  _
-//  |  __ \   /\   / __ \  / ____|/ __ \| |
-//  | |  | | /  \ | |  | || (___ | |  | | |
-//  | |  | |/ /\ \| |  | | \___ \| |  | | |
-//  | |__| / ____ \ |__| | ____) | |__| | |____
-//  |_____/_/    \_\____(_)_____/ \____/|______|
+//   _____          ____           _____ ____  _   _ _______ _____            _____ _______ 
+//  |  __ \   /\   / __ \         / ____/ __ \| \ | |__   __|  __ \     /\   / ____|__   __|
+//  | |  | | /  \ | |  | |       | |   | |  | |  \| |  | |  | |__) |   /  \ | |       | |   
+//  | |  | |/ /\ \| |  | |       | |   | |  | | . ` |  | |  |  _  /   / /\ \| |       | |   
+//  | |__| / ____ \ |__| |       | |___| |__| | |\  |  | |  | | \ \  / ____ \ |____   | |   
+//  |_____/_/    \_\____/         \_____\____/|_| \_|  |_|  |_|  \_\/_/    \_\_____|  |_|   
+//                                                                                         
+//                                                                                         
 //  deployed by createDAO.org for main DAO implementation
+//
+// Hey there! 🌍 This code is dedicated to building a better, greener future. 
+// Feel free to study and learn from it. But hey, no lazy copy-paste clones for 
+// quick profit without real innovation, okay? That's why it's licensed under 
+// the Business Source License 1.1 (BUSL-1.1) for 4 years.
+// After that, it’s open for everyone. Build something meaningful. ✌️
+// — Diornov
+//
+//
+//
 
-// Hey! This code is for mother Earth's prosperity. Feel free to learn from it,
-// but I'm tired of cheapskate copycats deploying clones to make quick cash
-// without adding any value. That's why it's BSL licensed for 4 years.
-// After that, it's all yours. Peace ✌️
-// Diornov
 pragma solidity ^0.8.20;
 
 import "./core/DAOProposals.sol";
@@ -82,8 +89,8 @@ contract DAO is DAOProposals, DAOExecutor {
 
     // Required override for UUPS proxy
     function _authorizeUpgrade(
-        address newImplementation
-    ) internal override {
+        address
+    ) internal override view {
         CoreStorage.Layout storage core = _getCore();
         if (!core.executingProposal) {
             // Only allow owner for direct upgrades (initialization)

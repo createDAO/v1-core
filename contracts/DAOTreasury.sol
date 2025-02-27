@@ -1,21 +1,23 @@
 // SPDX-License-Identifier: BSL-1.1
-
-//   _____          ____ _______                                              _ 
-//  |  __ \   /\   / __ \__   __|                                            | |
-//  | |  | | /  \ | |  | | | |_ __ ___  __ _ ___ _   _ _ __ _   _   ___  ___ | |
-//  | |  | |/ /\ \| |  | | | | '__/ _ \/ _` / __| | | | '__| | | | / __|/ _ \| |
-//  | |__| / ____ \ |__| | | | | |  __/ (_| \__ \ |_| | |  | |_| |_\__ \ (_) | |
-//  |_____/_/    \_\____/  |_|_|  \___|\__,_|___/\__,_|_|   \__, (_)___/\___/|_|
-//                                                           __/ |              
-//                                                          |___/    
-
-//  deployed by createDAO.org for main DAO implementation
-
-// Hey! This code is for mother Earth's prosperity. Feel free to learn from it,
-// but I'm tired of cheapskate copycats deploying clones to make quick cash
-// without adding any value. That's why it's BSL licensed for 4 years.
-// After that, it's all yours. Peace ✌️
-// Diornov
+//   _____          ____       _______ _____  ______           _____ _    _ _______     __
+//  |  __ \   /\   / __ \     |__   __|  __ \|  ____|   /\    / ____| |  | |  __ \ \   / /
+//  | |  | | /  \ | |  | |       | |  | |__) | |__     /  \  | (___ | |  | | |__) \ \_/ / 
+//  | |  | |/ /\ \| |  | |       | |  |  _  /|  __|   / /\ \  \___ \| |  | |  _  / \   /  
+//  | |__| / ____ \ |__| |       | |  | | \ \| |____ / ____ \ ____) | |__| | | \ \  | |   
+//  |_____/_/    \_\____/        |_|  |_|  \_\______/_/    \_\_____/ \____/|_|  \_\ |_|
+//                                                                                         
+//                                                                                         
+//  deployed by createDAO.org for main DAO treasury implementation
+//
+// Hey there! 🌍 This code is dedicated to building a better, greener future. 
+// Feel free to study and learn from it. But hey, no lazy copy-paste clones for 
+// quick profit without real innovation, okay? That's why it's licensed under 
+// the Business Source License 1.1 (BUSL-1.1) for 4 years.
+// After that, it’s open for everyone. Build something meaningful. ✌️
+// — Diornov
+//
+//
+//
 pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";

@@ -1,21 +1,24 @@
 // SPDX-License-Identifier: BSL-1.1
 
-//   _____          ____   _____ _        _    _                _____  ____  _      
-//  |  __ \   /\   / __ \ / ____| |      | |  (_)              / ____|/ __ \| |     
-//  | |  | | /  \ | |  | | (___ | |_ __ _| | ___ _ __   __ _  | (___ | |  | | |     
-//  | |  | |/ /\ \| |  | |\___ \| __/ _` | |/ / | '_ \ / _` |  \___ \| |  | | |     
-//  | |__| / ____ \ |__| |____) | || (_| |   <| | | | | (_| |_ ____) | |__| | |____ 
-//  |_____/_/    \_\____/|_____/ \__\__,_|_|\_\_|_| |_|\__, (_)_____/ \____/|______|
-//                                                      __/ |                       
-//                                                     |___/                        
-
-//  deployed by createDAO.org for main DAO implementation
-
-// Hey! This code is for mother Earth's prosperity. Feel free to learn from it,
-// but I'm tired of cheapskate copycats deploying clones to make quick cash
-// without adding any value. That's why it's BSL licensed for 4 years.
-// After that, it's all yours. Peace ✌️
-// Diornov
+//   _____          ____        _____ _______       _  _______ _   _  _____ 
+//  |  __ \   /\   / __ \      / ____|__   __|/\   | |/ /_   _| \ | |/ ____|
+//  | |  | | /  \ | |  | |    | (___    | |  /  \  | ' /  | | |  \| | |  __ 
+//  | |  | |/ /\ \| |  | |     \___ \   | | / /\ \ |  <   | | | . ` | | |_ |
+//  | |__| / ____ \ |__| |     ____) |  | |/ ____ \| . \ _| |_| |\  | |__| |
+//  |_____/_/    \_\____/     |_____/   |_/_/    \_\_|\_\_____|_| \_|\_____|  
+//                                                                                         
+//                                                                                         
+//  deployed by createDAO.org for main DAO staking implementation
+//
+// Hey there! 🌍 This code is dedicated to building a better, greener future. 
+// Feel free to study and learn from it. But hey, no lazy copy-paste clones for 
+// quick profit without real innovation, okay? That's why it's licensed under 
+// the Business Source License 1.1 (BUSL-1.1) for 4 years.
+// After that, it’s open for everyone. Build something meaningful. ✌️
+// — Diornov
+//
+//
+//
 pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
@@ -171,7 +174,7 @@ contract DAOStaking is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     }
 
     // Required override for UUPS proxy
-    function _authorizeUpgrade(address newImplementation) internal override {
+    function _authorizeUpgrade(address) internal override view {
         if (!_executingProposal) {
             // Only allow owner for direct upgrades
             _checkOwner();

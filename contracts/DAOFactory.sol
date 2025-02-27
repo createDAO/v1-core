@@ -1,18 +1,24 @@
 // SPDX-License-Identifier: BSL-1.1
-//   _____          ____  ______         _
-//  |  __ \   /\   / __ \|  ____|       | |
-//  | |  | | /  \ | |  | | |__ __ _  ___| |_ ___  _ __ _   _
-//  | |  | |/ /\ \| |  | |  __/ _` |/ __| __/ _ \| '__| | | |
-//  | |__| / ____ \ |__| | | | (_| | (__| || (_) | |  | |_| |
-//  |_____/_/    \_\____/|_|  \__,_|\___|\__\___/|_|   \__, |
-//                                                      __/ |
-//                                                     |___/
-// deployed by createDAO.org.
-// Hey! This code is for mother Earth's prosperity. Feel free to learn from it,
-// but I'm tired of cheapskate copycats deploying clones to make quick cash
-// without adding any value. That's why it's BSL licensed for 4 years.
-// After that, it's all yours. Peace ✌️
-// Diornov
+//   _____          ____       ______      _____ _______ ____  _______     __
+//  |  __ \   /\   / __ \     |  ____/\   / ____|__   __/ __ \|  __ \ \   / /
+//  | |  | | /  \ | |  | |    | |__ /  \ | |       | | | |  | | |__) \ \_/ / 
+//  | |  | |/ /\ \| |  | |    |  __/ /\ \| |       | | | |  | |  _  / \   /  
+//  | |__| / ____ \ |__| |    | | / ____ \ |____   | | | |__| | | \ \  | |   
+//  |_____/_/    \_\____/     |_|/_/    \_\_____|  |_|  \____/|_|  \_\ |_|   
+//                                                                                         
+//                                                                                         
+//  deployed by createDAO.org for main createDAO Contract - DAO Factory
+//
+// Hey there! 🌍 This code is dedicated to building a better, greener future. 
+// Feel free to study and learn from it. But hey, no lazy copy-paste clones for 
+// quick profit without real innovation, okay? That's why it's licensed under 
+// the Business Source License 1.1 (BUSL-1.1) for 4 years.
+// After that, it’s open for everyone. Build something meaningful. ✌️
+// — Diornov
+//
+//
+//
+
 pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
