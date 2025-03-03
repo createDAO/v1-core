@@ -36,7 +36,7 @@ describe("DAOPresale Edge Cases", function () {
 
       await expect(
         presale.sell(tokenAmount, 0, deadline)
-      ).to.be.revertedWith("Insufficient ETH balance");
+      ).to.be.revertedWith("Cannot sell more than have been purchased");
     });
 
     it("Should revert when trying to buy more tokens than available", async function () {

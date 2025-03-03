@@ -205,6 +205,10 @@ contract DAOFactory is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         )
     {
         require(_isLatestVersion(versionId), "Only latest version is active");
+        // Validate token symbol length
+        require(bytes(tokenSymbol).length < 7, "Symbol must be less than 7 chars");
+        // Validate maximum token supply
+        require(initialSupply <= 999_999_999_999 * 10**18, "Token amount exceeds maximum");
         CoreImplementation storage impl = _getStorage().coreImplementations[versionId];
 
         // Deploy token proxy
