@@ -54,6 +54,11 @@ describe("DAOPresale Quote Functions", function () {
     it("Should correctly quote ETH needed for tokens within single tier", async function () {
       const { presale, initialPrice } = await loadFixture(deployPresaleFixture);
       
+      // First buy some tokens to make tokensSold > 0
+      const ethToBuy = ethers.parseEther("1"); // Buy enough tokens
+      const deadline = (await time.latest()) + 3600;
+      await presale.buy(0, deadline, { value: ethToBuy });
+      
       const tokenAmount = ethers.parseEther("100");
       const [ethNeeded, currentPrice] = await presale.quoteETHForExactTokens(tokenAmount);
       
@@ -66,14 +71,27 @@ describe("DAOPresale Quote Functions", function () {
     it("Should correctly quote ETH needed for tokens across multiple tiers", async function () {
       const { presale, tokensPerTier, initialPrice } = await loadFixture(deployPresaleFixture);
       
-      // Try to sell more than one tier
-      const tokenAmount = tokensPerTier + ethers.parseEther("1000");
+      // First buy enough tokens to cover multiple tiers
+      const ethToBuy = ethers.parseEther("100"); // Buy a very large amount of tokens
+      const deadline = (await time.latest()) + 3600;
+      await presale.buy(0, deadline, { value: ethToBuy });
+      
+      // Calculate how many tokens we bought
+      const tokensBought = await presale.calculatePurchaseAcrossTiers(ethToBuy);
+      
+      // Use a portion of the tokens we bought for the quote
+      const tokenAmount = (tokensBought * 90n) / 100n; // Use 90% of the tokens we bought
+      
       const [ethNeeded, currentPrice] = await presale.quoteETHForExactTokens(tokenAmount);
       
       // Verify ETH needed matches sell return calculation
       const sellReturn = await presale.calculateSellReturn(tokenAmount);
       expect(ethNeeded).to.equal(sellReturn);
-      expect(currentPrice).to.equal(initialPrice);
+      
+      // Get the current tier to calculate expected price
+      const currentTier = await presale.getCurrentTier();
+      const expectedTierPrice = (initialPrice * (125n ** currentTier)) / (100n ** currentTier);
+      expect(currentPrice).to.equal(expectedTierPrice);
     });
   });
 

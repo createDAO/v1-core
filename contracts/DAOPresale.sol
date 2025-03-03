@@ -37,6 +37,7 @@ contract DAOPresale is Initializable, UUPSUpgradeable {
     uint256 public initialPrice;
     uint256 public tokensPerTier;
     uint256 public totalEthRaised;
+    uint256 public totalEthPaidOut;
     bool public paused;
 
     // Events
@@ -121,6 +122,9 @@ contract DAOPresale is Initializable, UUPSUpgradeable {
             "Token transfer failed"
         );
 
+        // Track ETH paid out
+        totalEthPaidOut += ethOut;
+
         // Transfer ETH to seller
         (bool success, ) = payable(msg.sender).call{value: ethOut}("");
         require(success, "ETH transfer failed");
@@ -161,35 +165,52 @@ contract DAOPresale is Initializable, UUPSUpgradeable {
         return totalTokens;
     }
 
-    function calculateSellReturn(
-        uint256 tokenAmount
-    ) public view returns (uint256) {
-        uint256 remainingTokens = tokenAmount;
-        uint256 totalEth = 0;
-        uint256 currentTier = getCurrentTier();
-        uint256 price = getCurrentPrice();
-        uint256 soldInCurrentTier = getTokensSold() % tokensPerTier;
-        uint256 spaceInCurrentTier = tokensPerTier - soldInCurrentTier;
-
-        while (remainingTokens > 0) {
-            if (remainingTokens > spaceInCurrentTier) {
-                // Fill current tier
-                totalEth += (spaceInCurrentTier * price) / PRECISION;
-                remainingTokens -= spaceInCurrentTier;
-                // Move to previous tier
-                if (currentTier > 0) {
-                    currentTier--;
-                    price = (initialPrice * (TIER_MULTIPLIER ** currentTier)) / (100 ** currentTier);
-                    spaceInCurrentTier = tokensPerTier;
-                }
+function calculateSellReturn(uint256 tokenAmount) public view returns (uint256) {
+    uint256 tokensSold = getTokensSold();
+    
+    // If attempting to sell more than have been sold, revert
+    if (tokenAmount > tokensSold) {
+        revert("Cannot sell more than have been purchased");
+    }
+    
+    uint256 remainingTokens = tokenAmount;
+    uint256 totalEth = 0;
+    
+    // Starting tier and position within that tier
+    uint256 currentTier = tokensSold / tokensPerTier;
+    uint256 positionInTier = tokensSold % tokensPerTier;
+    
+    while (remainingTokens > 0) {
+        // Calculate price for current tier
+        uint256 price = (initialPrice * (TIER_MULTIPLIER ** currentTier)) / (100 ** currentTier);
+        
+        // How many tokens can be sold in the current tier
+        uint256 tokensInCurrentTier = positionInTier;
+        
+        if (remainingTokens <= tokensInCurrentTier) {
+            // All remaining tokens can be sold in current tier
+            uint256 ethForTier = (remainingTokens * price) / PRECISION;
+            totalEth += ethForTier;
+            break;
+        } else {
+            // Sell what we can in the current tier
+            uint256 ethForTier = (tokensInCurrentTier * price) / PRECISION;
+            totalEth += ethForTier;
+            remainingTokens -= tokensInCurrentTier;
+            
+            // Move to previous tier if possible
+            if (currentTier > 0) {
+                currentTier--;
+                positionInTier = tokensPerTier; // Full tier
             } else {
-                // Sell remaining tokens in current tier
-                totalEth += (remainingTokens * price) / PRECISION;
+                // We've gone through all tiers
                 break;
             }
         }
-        return totalEth;
     }
+    
+    return totalEth;
+}
 
     function getCurrentTier() public view returns (uint256) {
         uint256 tokensSold = getTokensSold();
@@ -252,13 +273,13 @@ contract DAOPresale is Initializable, UUPSUpgradeable {
         return (tokensReceived, pricesPerTier, tokensPerTierBought);
     }
 
-    function quoteETHForExactTokens(
-        uint256 tokenAmount
-    ) external view returns (uint256 ethReceived, uint256 currentTierPrice) {
-        currentTierPrice = getCurrentPrice();
-        ethReceived = calculateSellReturn(tokenAmount);
-        return (ethReceived, currentTierPrice);
-    }
+function quoteETHForExactTokens(
+    uint256 tokenAmount
+) external view returns (uint256 ethReceived, uint256 currentTierPrice) {
+    currentTierPrice = getCurrentPrice();
+    ethReceived = calculateSellReturn(tokenAmount);
+    return (ethReceived, currentTierPrice);
+}
 
     function getPresaleState()
         external
@@ -275,7 +296,10 @@ contract DAOPresale is Initializable, UUPSUpgradeable {
         currentPrice = getCurrentPrice();
         remainingInTier = getRemainingInCurrentTier();
         totalRemaining = token.balanceOf(address(this));
-        totalRaised = totalEthRaised;
+        
+        // Calculate net ETH raised (total raised minus total paid out)
+        totalRaised = totalEthRaised - totalEthPaidOut;
+        
         return (
             currentTier,
             currentPrice,
