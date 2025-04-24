@@ -51,7 +51,7 @@ npm install
 Create a `.env` file in the project root with the following variables:
 
 ```env
-# Network RPC URLs (using Ankr service)
+# Network RPC URLs
 POLYGON_RPC_URL=https://rpc.ankr.com/polygon
 BASE_RPC_URL=https://rpc.ankr.com/base
 SEPOLIA_RPC_URL=https://rpc.ankr.com/eth_sepolia
@@ -127,7 +127,7 @@ The workflow configuration can be found in `.github/workflows/test.yml`.
 
 ## License
 
-This project is licensed under the Business Source License 1.1 (BUSL-1.1). See the [LICENSE](LICENSE) file for details.
+This project is licensed under the Business Source License 1.1 (MIT). See the [LICENSE](LICENSE) file for details.
 
 The license terms include:
 - 4-year commercial use restriction (until 2028-02-11)

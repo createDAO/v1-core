@@ -79,12 +79,12 @@ contract DAO is DAOProposals, DAOExecutor {
         core.upgradeableContracts[IDAOBase.UpgradeableContract.Token] = _token;
 
         // Initialize governance parameters
-        core.votingPeriod = 1 minutes;
+        core.votingPeriod = 3 days;
         core.minProposalStake = 1e18; // 1 token
         core.quorum = 5000; // 50%
     }
 
-    string private constant VERSION = "1.0.0";
+    string private constant VERSION = "1.0.2";
 
     function version() external pure virtual returns (string memory) {
         return VERSION;

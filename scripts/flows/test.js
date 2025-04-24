@@ -143,7 +143,7 @@ async function main() {
 
     // Final verification of DAO proxy
     console.log("\nVerifying DAO proxy setup...");
-    const DAO = await ethers.getContractFactory("DAO");
+    const DAO = await ethers.getContractFactory("contracts/DAO.sol:DAO");
     const dao = DAO.attach(daoAddresses.daoAddress);
     
     try {
@@ -173,7 +173,7 @@ async function main() {
 
         // Verify token distribution
         console.log("\nVerifying token distribution:");
-        const Token = await ethers.getContractFactory("DAOToken");
+        const Token = await ethers.getContractFactory("contracts/DAOToken.sol:DAOToken");
         const token = Token.attach(daoAddresses.tokenAddress);
         
         const totalSupply = await token.totalSupply();

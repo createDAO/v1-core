@@ -6,7 +6,9 @@ async function main() {
 
   // Deploy implementation
   const DAOFactory = await ethers.getContractFactory("DAOFactory");
+  
   const implementation = await DAOFactory.deploy();
+  
   await implementation.waitForDeployment();
   
   const implementationAddress = await implementation.getAddress();
@@ -25,11 +27,11 @@ async function main() {
   console.log("DAOFactoryProxy deployed to:", proxyAddress);
 
   // Verify the implementation contract
-  console.log("\nVerifying implementation contract on Etherscan...");
+  console.log("\nVerifying implementation contract...");
   await verify(implementationAddress, []);
 
   // Verify the proxy contract
-  console.log("\nVerifying proxy contract on Etherscan...");
+  console.log("\nVerifying proxy contract...");
   await verify(proxyAddress, [implementationAddress, initData], "contracts/DAOFactoryProxy.sol:DAOFactoryProxy");
 
   console.log("\nDeployment completed!");

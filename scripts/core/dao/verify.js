@@ -3,12 +3,12 @@ const { verify } = require("../../utils/verification");
 
 async function main() {
   // Hardcoded variables
-  const factoryAddress = "0xb4c290F46025E50DB27280a5AF1D93B3A7a91b61";
-  const daoAddress = "0x90BC6DeD2cb342038E9585c30c1Fa6f1d4c24DeD";
-  const tokenAddress = "0xf76bD38d04C7760C012d14522beF92839460CA3F";
-  const treasuryAddress = "0x983053AF2116F3f27C236ae5E069aF4e1D9E7b4b";
-  const stakingAddress = "0x5C25F2D7131855bF5D6d3Da5597326d21aD3bA3e";
-  const creator = "0x41bfbe4153F247C8629ab528b41b9Eb011773B2C"; // wallet that called create_dao
+  const factoryAddress = "0xCe1368c6b408B23b31D387eb0FB517D4485005E9";
+  const daoAddress = "0x3b10b5f28a2c6ca1bD5Aa9bda1bc8726a8D6aC96";
+  const tokenAddress = "0x45dC442D161146b6372aBe99875B2262c6D87461";
+  const treasuryAddress = "0xc75C1b27510b2b5C6dF59149042bd348a15D103A";
+  const stakingAddress = "0x45CF70FAE9c7975931e9FB73B28EaE91833ee9Bd";
+  const creator = "0x983332bB0b689Ed97907F658525d19F4D876D96c"; // wallet that called create_dao
   // DAO and Token details
   const name = "Test DAO";
   const tokenName = "Test Token";
@@ -22,7 +22,7 @@ async function main() {
   const factory = DAOFactory.attach(factoryAddress);
   const latestVersion = await factory.getLatestVersion();
   const [daoImpl, tokenImpl, treasuryImpl, stakingImpl] =
-    await factory.getImplementation(latestVersion);
+    await factory.getCoreImplementation(latestVersion);
 
   console.log("\nImplementation addresses:");
   console.log("- DAO:", daoImpl);
@@ -76,6 +76,8 @@ async function main() {
     factoryAddress,  // Factory holds rest temporarily
     factoryAddress   // Factory is initial owner
   ]);
+  console.log(tokenInit);
+  
 
   // Verify the token proxy contract
   await verify(

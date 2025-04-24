@@ -26,10 +26,10 @@ async function validateDAOSetup(params) {
   } = params;
 
   // Get contracts
-  const DAO = await ethers.getContractFactory("DAO");
-  const Token = await ethers.getContractFactory("DAOToken");
-  const Treasury = await ethers.getContractFactory("DAOTreasury");
-  const Staking = await ethers.getContractFactory("DAOStaking");
+  const DAO = await ethers.getContractFactory("contracts/DAO.sol:DAO");
+  const Token = await ethers.getContractFactory("contracts/DAOToken.sol:DAOToken");
+  const Treasury = await ethers.getContractFactory("contracts/DAOTreasury.sol:DAOTreasury");
+  const Staking = await ethers.getContractFactory("contracts/DAOStaking.sol:DAOStaking");
 
   console.log("\nVerifying addresses...");
   console.log("DAO address:", daoAddress);

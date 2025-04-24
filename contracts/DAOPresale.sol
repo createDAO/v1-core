@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: BSL-1.1
+// SPDX-License-Identifier: MIT
 //   _____          ____       _____  _____  ______  _____         _      ______ 
 //  |  __ \   /\   / __ \     |  __ \|  __ \|  ____|/ ____|  /\   | |    |  ____|
 //  | |  | | /  \ | |  | |    | |__) | |__) | |__  | (___   /  \  | |    | |__   
@@ -7,17 +7,24 @@
 //  |_____/_/    \_\____/     |_|    |_|  \_\______|_____/_/    \_\______|______|
 //                                                                                         
 //                                                                                         
-//  deployed by createDAO.org for main DAO presale implementation
-//
-// Hey there! 🌍 This code is dedicated to building a better, greener future. 
-// Feel free to study and learn from it. But hey, no lazy copy-paste clones for 
-// quick profit without real innovation, okay? That's why it's licensed under 
-// the Business Source License 1.1 (BUSL-1.1) for 4 years.
-// After that, it’s open for everyone. Build something meaningful. ✌️
+// Deployed by createDAO.org - DAO Presale Implementation
+// GitHub: https://github.com/createdao
+// 
+// 🌍 This code is free. Like speech. Like people should be.
+// Use it, learn from it, build with it. Share what you make.
+// But remember what this is for: not greed, not ego — but freedom, creativity, and unity.
+// 
+// Inspired by Chaplin's call in The Great Dictator:
+// “You, the people, have the power — the power to create happiness!”
+// 
+// So build not for domination, but for decentralization.
+// Not for walls, but bridges. Not for power, but empowerment.
+// 
+// Licensed under the MIT License — short, sweet, and to the point.
+// No restrictions, no delays. Just create. Just be human. ✌️
 // — Diornov
-//
-//
-//
+
+
 pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";

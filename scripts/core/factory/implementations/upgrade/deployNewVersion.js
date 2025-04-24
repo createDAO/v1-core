@@ -1,12 +1,14 @@
 const { ethers } = require("hardhat");
-const { verify } = require("../../../utils/verification");
+const { verify } = require("../../../../utils/verification");
 
-async function main() {
-  console.log("Starting implementations deployment...");
+async function deployNewVersion() {
+  const version = '1.0.1'
+
+  console.log("Starting implementations deployment of new version...");
 
   // Deploy DAO implementation
   console.log("\nDeploying DAO implementation...");
-  const DAO = await ethers.getContractFactory("contracts/DAO.sol:DAO");
+  const DAO = await ethers.getContractFactory(`contracts/v${version}/DAO.sol:DAO`);
   const dao = await DAO.deploy();
   await dao.waitForDeployment();
   const daoAddress = await dao.getAddress();
@@ -15,7 +17,7 @@ async function main() {
 
   // Deploy Token implementation
   console.log("\nDeploying Token implementation...");
-  const DAOToken = await ethers.getContractFactory("contracts/DAOToken.sol:DAOToken");
+  const DAOToken = await ethers.getContractFactory(`contracts/v${version}/DAOToken.sol:DAOToken`);
   const token = await DAOToken.deploy();
   await token.waitForDeployment();
   const tokenAddress = await token.getAddress();
@@ -24,7 +26,7 @@ async function main() {
 
   // Deploy Treasury implementation
   console.log("\nDeploying Treasury implementation...");
-  const DAOTreasury = await ethers.getContractFactory("contracts/DAOTreasury.sol:DAOTreasury");
+  const DAOTreasury = await ethers.getContractFactory(`contracts/v${version}/DAOTreasury.sol:DAOTreasury`);
   const treasury = await DAOTreasury.deploy();
   await treasury.waitForDeployment();
   const treasuryAddress = await treasury.getAddress();
@@ -33,7 +35,7 @@ async function main() {
 
   // Deploy Staking implementation
   console.log("\nDeploying Staking implementation...");
-  const DAOStaking = await ethers.getContractFactory("contracts/DAOStaking.sol:DAOStaking");
+  const DAOStaking = await ethers.getContractFactory(`contracts/v${version}/DAOStaking.sol:DAOStaking`);
   const staking = await DAOStaking.deploy();
   await staking.waitForDeployment();
   const stakingAddress = await staking.getAddress();
@@ -53,7 +55,7 @@ async function main() {
 
 // Run directly or export for use in other scripts
 if (require.main === module) {
-  main()
+  deployNewVersion()
     .then(() => process.exit(0))
     .catch((error) => {
       console.error(error);
@@ -61,4 +63,4 @@ if (require.main === module) {
     });
 }
 
-module.exports = { main };
+module.exports = { deployNewVersion };

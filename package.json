@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "A comprehensive DAO creation and management platform built on Ethereum",
   "author": "Diko <info@createdao.org>",
-  "license": "BUSL-1.1",
+  "license": "MIT",
   "homepage": "https://createdao.org",
   "repository": {
     "type": "git",

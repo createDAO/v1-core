@@ -39,7 +39,7 @@ contract DAOStaking is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     using SafeERC20 for IERC20;
 
     // Constants
-    string private constant VERSION = "1.0.0";
+    string private constant VERSION = "1.0.2";
     uint256 private constant MULTIPLIER_DENOMINATOR = 10000; // Base 100%
 
     // Core state variables

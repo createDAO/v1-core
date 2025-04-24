@@ -14,12 +14,12 @@ interface IDAOExecutor is IDAOEvents {
      */
     function execute(uint256 proposalId) external;
 
-    /**
-     * @dev Performs an emergency withdrawal when the DAO is paused
-     * @param token The token to withdraw (address(0) for ETH)
-     * @param recipient The recipient of the withdrawn funds
-     * @param amount The amount to withdraw
-     */
+    // /**
+    //  * @dev Performs an emergency withdrawal when the DAO is paused
+    //  * @param token The token to withdraw (address(0) for ETH)
+    //  * @param recipient The recipient of the withdrawn funds
+    //  * @param amount The amount to withdraw
+    //  */
     // function emergencyWithdraw(
     //     address token,
     //     address recipient,
