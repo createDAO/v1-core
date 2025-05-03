@@ -174,7 +174,7 @@ function parseGasReport(content) {
         });
 
     // Find createDAO transaction (before removing parameters)
-    const daoFactoryTxs = contractsArray.find(c => c.name === 'DAOFactory')?.methods || [];
+    const daoFactoryTxs = contractsArray.find(c => c.name === 'DAOFactory.sol:DAOFactory')?.methods || [];
     const createDAOMethod = daoFactoryTxs.find(m => m.name.startsWith('createDAO('));
     if (createDAOMethod) {
         report.createDAOTransaction = {
