@@ -84,7 +84,7 @@ contract DAO is DAOProposals, DAOExecutor {
         core.quorum = 5000; // 50%
     }
 
-    string private constant VERSION = "1.0.0";
+    string private constant VERSION = "1.0.2";
 
     function version() external pure virtual returns (string memory) {
         return VERSION;

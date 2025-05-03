@@ -42,10 +42,10 @@ export async function deployDAOFixture() {
     })?.args as any;
   
   // Get contract instances
-  const dao = await ethers.getContractAt("DAO", daoAddress);
-  const token = await ethers.getContractAt("DAOToken", tokenAddress);
-  const treasury = await ethers.getContractAt("DAOTreasury", treasuryAddress);
-  const staking = await ethers.getContractAt("DAOStaking", stakingAddress);
+  const dao = await ethers.getContractAt("contracts/DAO.sol:DAO", daoAddress);
+  const token = await ethers.getContractAt("contracts/DAOToken.sol:DAOToken", tokenAddress);
+  const treasury = await ethers.getContractAt("contracts/DAOTreasury.sol:DAOTreasury", treasuryAddress);
+  const staking = await ethers.getContractAt("contracts/DAOStaking.sol:DAOStaking", stakingAddress);
   
   // Helper function to stake tokens that matches our utility function signature
   const stakeTokens = async (account: any, amount: bigint) => {

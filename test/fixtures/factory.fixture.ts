@@ -4,7 +4,7 @@ export async function deployFactoryFixture() {
   const [owner, ...accounts] = await ethers.getSigners();
   
   // Deploy factory implementation
-  const factoryImpl = await ethers.deployContract("DAOFactory");
+  const factoryImpl = await ethers.deployContract("contracts/DAOFactory.sol:DAOFactory");
   await factoryImpl.waitForDeployment();
   
   // Deploy & initialize proxy
@@ -15,7 +15,7 @@ export async function deployFactoryFixture() {
   await proxy.waitForDeployment();
   
   // Get factory instance at proxy address
-  const factory = await ethers.getContractAt("DAOFactory", await proxy.getAddress());
+  const factory = await ethers.getContractAt("contracts/DAOFactory.sol:DAOFactory", await proxy.getAddress());
   
   return { factory, factoryImpl, owner, accounts };
 }
@@ -24,11 +24,11 @@ export async function deployImplementationsFixture() {
   const { factory, owner, accounts } = await deployFactoryFixture();
   
   // Deploy all implementations
-  const daoImpl = await ethers.deployContract("DAO");
-  const tokenImpl = await ethers.deployContract("DAOToken");
-  const treasuryImpl = await ethers.deployContract("DAOTreasury");
-  const stakingImpl = await ethers.deployContract("DAOStaking");
-  const presaleImpl = await ethers.deployContract("DAOPresale");
+  const daoImpl = await ethers.deployContract("contracts/DAO.sol:DAO");
+  const tokenImpl = await ethers.deployContract("contracts/DAOToken.sol:DAOToken");
+  const treasuryImpl = await ethers.deployContract("contracts/DAOTreasury.sol:DAOTreasury");
+  const stakingImpl = await ethers.deployContract("contracts/DAOStaking.sol:DAOStaking");
+  const presaleImpl = await ethers.deployContract("contracts/DAOPresale.sol:DAOPresale");
   
   // Wait for all deployments
   await Promise.all([

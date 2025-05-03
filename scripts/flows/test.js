@@ -1,4 +1,4 @@
-const { ethers } = require("hardhat");
+const { ethers, network } = require("hardhat");
 
 const VERSION = "1.0.0"; // Must match FACTORY_VERSION in DAOFactory.sol
 
@@ -7,6 +7,7 @@ const { main: deployFactory } = require("../core/factory/deploy.js");
 const { main: deployImplementations } = require("../core/factory/implementations/deploy.js");
 const { main: registerImplementations } = require("../core/factory/implementations/register.js");
 const { main: createDAO } = require("../core/dao/create.js");
+const { main: verifyDAO } = require("../core/dao/verify.js");
 const { main: deployPresale } = require("../core/presale/deploy.js");
 const { main: registerPresale } = require("../core/presale/register.js");
 
@@ -22,7 +23,7 @@ async function main() {
 
     // Verify factory implementation
     console.log("\nVerifying factory setup...");
-    const factory = await ethers.getContractFactory("DAOFactory");
+    const factory = await ethers.getContractFactory("contracts/DAOFactory.sol:DAOFactory");
     const factoryContract = factory.attach(FACTORY_PROXY_ADDRESS);
     
     try {
@@ -141,9 +142,31 @@ async function main() {
     console.log("Treasury:", daoAddresses.treasuryAddress);
     console.log("Staking:", daoAddresses.stakingAddress);
 
+    // Verify proxy contracts on Etherscan/Sourcify if not on local network
+    let verificationResults;
+    if (network.name !== "hardhat" && network.name !== "localhost") {
+        console.log("\n7. Verifying DAO proxy contracts...");
+        verificationResults = await verifyDAO({
+            factoryAddress: FACTORY_PROXY_ADDRESS,
+            daoAddress: daoAddresses.daoAddress,
+            tokenAddress: daoAddresses.tokenAddress,
+            treasuryAddress: daoAddresses.treasuryAddress,
+            stakingAddress: daoAddresses.stakingAddress,
+            creator: deployer.address,
+            name: "Test DAO",
+            tokenName: "Test Token",
+            tokenSymbol: "TEST",
+            initialSupply: ethers.parseEther("1000000").toString()
+        });
+        
+        if (verificationResults.verified) {
+            console.log("\nAll proxy contracts verified successfully on Etherscan/Sourcify! ✅");
+        }
+    }
+
     // Final verification of DAO proxy
     console.log("\nVerifying DAO proxy setup...");
-    const DAO = await ethers.getContractFactory("DAO");
+    const DAO = await ethers.getContractFactory("contracts/DAO.sol:DAO");
     const dao = DAO.attach(daoAddresses.daoAddress);
     
     try {
@@ -173,7 +196,7 @@ async function main() {
 
         // Verify token distribution
         console.log("\nVerifying token distribution:");
-        const Token = await ethers.getContractFactory("DAOToken");
+        const Token = await ethers.getContractFactory("contracts/DAOToken.sol:DAOToken");
         const token = Token.attach(daoAddresses.tokenAddress);
         
         const totalSupply = await token.totalSupply();

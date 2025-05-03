@@ -26,7 +26,6 @@
 
 
 
-
 pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
@@ -37,7 +36,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
 contract DAOToken is Initializable, ERC20Upgradeable, OwnableUpgradeable, UUPSUpgradeable {
     // Constants
-    string private constant VERSION = "1.0.0";
+    string private constant VERSION = "1.0.2";
     uint16 private constant MAX_TAX = 1000; // 10% in basis points
     
     // State variables

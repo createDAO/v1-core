@@ -18,7 +18,7 @@ async function main(params = {}) {
   }
 
   // Get the factory contract
-  const DAOFactory = await ethers.getContractFactory("DAOFactory");
+  const DAOFactory = await ethers.getContractFactory("contracts/DAOFactory.sol:DAOFactory");
   const factory = DAOFactory.attach(factoryAddress);
   const latestVersion = await factory.getLatestVersion();
   console.log("Latest version from proxy:", latestVersion);

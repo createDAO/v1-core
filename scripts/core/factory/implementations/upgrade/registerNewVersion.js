@@ -1,21 +1,15 @@
 const { ethers } = require("hardhat");
 
-const VERSION = "1.0.0"; // Must match FACTORY_VERSION in DAOFactory.sol
+const VERSION = "1.0.2"; // Must match FACTORY_VERSION in DAOFactory.sol
 
-async function main(params = {}) {
-  const {
-    FACTORY_PROXY_ADDRESS,
-    DAO_IMPL_ADDRESS,
-    TOKEN_IMPL_ADDRESS,
-    TREASURY_IMPL_ADDRESS,
-    STAKING_IMPL_ADDRESS,
-  } = params;
+async function registerNewVersion() {
 
-  // const FACTORY_PROXY_ADDRESS = "0x6Cf2fCbC483578ee80e3B8802780C20f461DCcFe";
-  // const DAO_IMPL_ADDRESS = "0x50B4C26572E4364533A07D06BD53cFB9ea4C08fc";
-  // const TOKEN_IMPL_ADDRESS = "0xabF664d55aAB01C368acaCcd9647639dcbBB76f1";
-  // const TREASURY_IMPL_ADDRESS = "0xfCc8C70eaDc509672F2591fb45B57CCECBCB0b22";
-  // const STAKING_IMPL_ADDRESS = "0x630fDB745c5341004E4b9bA745D16BB355C02533";
+
+  const FACTORY_PROXY_ADDRESS = "0xCe1368c6b408B23b31D387eb0FB517D4485005E9"; 
+  const DAO_IMPL_ADDRESS = "0xFB6bc31bf6575011680be1f51524fDb3a9853406"; //v1.0.1
+  const TOKEN_IMPL_ADDRESS = "0x36AEa3e923506C13a06Ed0cAF81Cf26A86cfDbA3"; //v1.0.1
+  const TREASURY_IMPL_ADDRESS = "0x82e94Cf5C303014aAE182d08758Fd0D76Db607cE"; //v1.0.1
+  const STAKING_IMPL_ADDRESS = "0x439Aba9FB575DaEF3409D166F4D6cC4B5864E9Ac"; //v1.0.1
 
   // Verify all addresses are provided
   const addresses = {
@@ -42,7 +36,7 @@ async function main(params = {}) {
   console.log("Version to register:", VERSION);
 
   // // Get the factory contract
-  const DAOFactory = await ethers.getContractFactory("contracts/DAOFactory.sol:DAOFactory");
+  const DAOFactory = await ethers.getContractFactory("DAOFactory");
   const factory = DAOFactory.attach(FACTORY_PROXY_ADDRESS);
 
   // // Create initialization template (empty for now as it's optional)
@@ -114,7 +108,7 @@ async function main(params = {}) {
 
 // Run directly or export for use in other scripts
 if (require.main === module) {
-  main()
+  registerNewVersion()
     .then(() => process.exit(0))
     .catch((error) => {
       console.error(error);
@@ -122,4 +116,4 @@ if (require.main === module) {
     });
 }
 
-module.exports = { main };
+module.exports = { registerNewVersion };

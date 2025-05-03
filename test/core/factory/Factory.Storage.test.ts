@@ -22,10 +22,10 @@ describe("DAOFactory Storage", function() {
       const { factory, implementations, owner } = await loadFixture(deployImplementationsFixture);
       
       // Deploy new set of implementations for version 2
-      const newDaoImpl = await ethers.deployContract("DAO");
-      const newTokenImpl = await ethers.deployContract("DAOToken");
-      const newTreasuryImpl = await ethers.deployContract("DAOTreasury");
-      const newStakingImpl = await ethers.deployContract("DAOStaking");
+      const newDaoImpl = await ethers.deployContract("contracts/DAO.sol:DAO");
+      const newTokenImpl = await ethers.deployContract("contracts/DAOToken.sol:DAOToken");
+      const newTreasuryImpl = await ethers.deployContract("contracts/DAOTreasury.sol:DAOTreasury");
+      const newStakingImpl = await ethers.deployContract("contracts/DAOStaking.sol:DAOStaking");
       
       await Promise.all([
         newDaoImpl.waitForDeployment(),
@@ -62,10 +62,10 @@ describe("DAOFactory Storage", function() {
       
       // Deploy and register new version
       const newImplementations = await Promise.all([
-        ethers.deployContract("DAO"),
-        ethers.deployContract("DAOToken"),
-        ethers.deployContract("DAOTreasury"),
-        ethers.deployContract("DAOStaking"),
+        ethers.deployContract("contracts/DAO.sol:DAO"),
+        ethers.deployContract("contracts/DAOToken.sol:DAOToken"),
+        ethers.deployContract("contracts/DAOTreasury.sol:DAOTreasury"),
+        ethers.deployContract("contracts/DAOStaking.sol:DAOStaking"),
       ]);
       
       await Promise.all(newImplementations.map(impl => impl.waitForDeployment()));
@@ -97,7 +97,7 @@ describe("DAOFactory Storage", function() {
       const { factory, owner } = await loadFixture(deployFactoryFixture);
       
       // Deploy new factory implementation with same version
-      const FactoryV1 = await ethers.getContractFactory("DAOFactory");
+      const FactoryV1 = await ethers.getContractFactory("contracts/DAOFactory.sol:DAOFactory");
       const newImplementation = await FactoryV1.deploy();
       await newImplementation.waitForDeployment();
 
@@ -154,7 +154,7 @@ describe("DAOFactory Storage", function() {
       const { factory } = await loadFixture(deployImplementationsFixture);
       const [, nonOwner] = await ethers.getSigners();
       
-      const FactoryV1 = await ethers.getContractFactory("DAOFactory");
+      const FactoryV1 = await ethers.getContractFactory("contracts/DAOFactory.sol:DAOFactory");
       const newImplementation = await FactoryV1.deploy();
       
       await expect(factory.connect(nonOwner).upgradeToAndCall(

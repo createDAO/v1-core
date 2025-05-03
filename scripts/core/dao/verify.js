@@ -1,28 +1,49 @@
 const { ethers } = require("hardhat");
 const { verify } = require("../../utils/verification");
 
-async function main() {
-  // Hardcoded variables
-  const factoryAddress = "0xb4c290F46025E50DB27280a5AF1D93B3A7a91b61";
-  const daoAddress = "0x90BC6DeD2cb342038E9585c30c1Fa6f1d4c24DeD";
-  const tokenAddress = "0xf76bD38d04C7760C012d14522beF92839460CA3F";
-  const treasuryAddress = "0x983053AF2116F3f27C236ae5E069aF4e1D9E7b4b";
-  const stakingAddress = "0x5C25F2D7131855bF5D6d3Da5597326d21aD3bA3e";
-  const creator = "0x41bfbe4153F247C8629ab528b41b9Eb011773B2C"; // wallet that called create_dao
-  // DAO and Token details
-  const name = "Test DAO";
-  const tokenName = "Test Token";
-  const tokenSymbol = "TEST";
-  const initialSupply = "1000000000000000000000000"; // 1 million tokens
+async function main(params = {}) {
+  // Hardcoded default values
+  const defaults = {
+    factoryAddress: "0x8d2D2fb9388B16a51263593323aBBDf80aee54e6",
+    daoAddress: "0x25718D871117FE677372FdE2282334753Dbd33f0",
+    tokenAddress: "0x6D5d3549ad39069B3bF11159c349c56A271C3651",
+    treasuryAddress: "0x95541AFc780cEb56bBfb146A30C3Bf52EC7aCA93",
+    stakingAddress: "0x6c4722b349E2fDa91CB40Aa25376Abe7b365E91F",
+    creator: "0x983332bB0b689Ed97907F658525d19F4D876D96c", // wallet that called create_dao
+    name: "Test DAO",
+    tokenName: "Test Token",
+    tokenSymbol: "TEST",
+    initialSupply: "1000000000000000000000000" // 1 million tokens
+  };
+
+  // Use provided params or fall back to defaults
+  const {
+    factoryAddress = defaults.factoryAddress,
+    daoAddress = defaults.daoAddress,
+    tokenAddress = defaults.tokenAddress,
+    treasuryAddress = defaults.treasuryAddress,
+    stakingAddress = defaults.stakingAddress,
+    creator = defaults.creator,
+    name = defaults.name,
+    tokenName = defaults.tokenName,
+    tokenSymbol = defaults.tokenSymbol,
+    initialSupply = defaults.initialSupply
+  } = params;
 
   console.log("\nStarting proxy verifications...");
+  console.log("DAO Address:", daoAddress);
+  console.log("Token Address:", tokenAddress);
+  console.log("Treasury Address:", treasuryAddress);
+  console.log("Staking Address:", stakingAddress);
+  console.log("Factory Address:", factoryAddress);
+  console.log("Creator Address:", creator);
 
   // Get the factory contract to get implementation addresses
-  const DAOFactory = await ethers.getContractFactory("DAOFactory");
+  const DAOFactory = await ethers.getContractFactory("contracts/DAOFactory.sol:DAOFactory");
   const factory = DAOFactory.attach(factoryAddress);
   const latestVersion = await factory.getLatestVersion();
   const [daoImpl, tokenImpl, treasuryImpl, stakingImpl] =
-    await factory.getImplementation(latestVersion);
+    await factory.getCoreImplementation(latestVersion);
 
   console.log("\nImplementation addresses:");
   console.log("- DAO:", daoImpl);
@@ -65,7 +86,7 @@ async function main() {
   console.log("- Factory:", factoryAddress);
 
   // Get the token contract interface
-  const DAOToken = await ethers.getContractFactory("DAOToken");
+  const DAOToken = await ethers.getContractFactory("contracts/DAOToken.sol:DAOToken");
   
   // Encode initialization data using the contract's interface
   const tokenInit = DAOToken.interface.encodeFunctionData("initialize", [
@@ -76,6 +97,8 @@ async function main() {
     factoryAddress,  // Factory holds rest temporarily
     factoryAddress   // Factory is initial owner
   ]);
+  console.log(tokenInit);
+  
 
   // Verify the token proxy contract
   await verify(
@@ -106,9 +129,18 @@ async function main() {
   );
 
   console.log("\n✅ All proxy contracts verified successfully!");
+  
+  // Return verification results
+  return {
+    daoAddress,
+    tokenAddress,
+    treasuryAddress,
+    stakingAddress,
+    verified: true
+  };
 }
 
-// Execute verification
+// Execute verification if script is run directly
 if (require.main === module) {
   main()
     .then(() => process.exit(0))

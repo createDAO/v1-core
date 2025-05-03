@@ -1,23 +1,29 @@
-// SPDX-License-Identifier: BSL-1.1
-//   _____          ____       _____  _____  ______  _____         _      ______ 
+// SPDX-License-Identifier: MIT
+//   _____          ____       _____  _____  ______  _____         _      ______
 //  |  __ \   /\   / __ \     |  __ \|  __ \|  ____|/ ____|  /\   | |    |  ____|
-//  | |  | | /  \ | |  | |    | |__) | |__) | |__  | (___   /  \  | |    | |__   
-//  | |  | |/ /\ \| |  | |    |  ___/|  _  /|  __|  \___ \ / /\ \ | |    |  __|  
-//  | |__| / ____ \ |__| |    | |    | | \ \| |____ ____) / ____ \| |____| |____ 
+//  | |  | | /  \ | |  | |    | |__) | |__) | |__  | (___   /  \  | |    | |__
+//  | |  | |/ /\ \| |  | |    |  ___/|  _  /|  __|  \___ \ / /\ \ | |    |  __|
+//  | |__| / ____ \ |__| |    | |    | | \ \| |____ ____) / ____ \| |____| |____
 //  |_____/_/    \_\____/     |_|    |_|  \_\______|_____/_/    \_\______|______|
-//                                                                                         
-//                                                                                         
-//  deployed by createDAO.org for main DAO presale implementation
 //
-// Hey there! 🌍 This code is dedicated to building a better, greener future. 
-// Feel free to study and learn from it. But hey, no lazy copy-paste clones for 
-// quick profit without real innovation, okay? That's why it's licensed under 
-// the Business Source License 1.1 (BUSL-1.1) for 4 years.
-// After that, it’s open for everyone. Build something meaningful. ✌️
+//
+// Deployed by createDAO.org - DAO Presale Implementation
+// GitHub: https://github.com/createdao
+//
+// 🌍 This code is free. Like speech. Like people should be.
+// Use it, learn from it, build with it. Share what you make.
+// But remember what this is for: not greed, not ego — but freedom, creativity, and unity.
+//
+// Inspired by Chaplin's call in The Great Dictator:
+// “You, the people, have the power — the power to create happiness!”
+//
+// So build not for domination, but for decentralization.
+// Not for walls, but bridges. Not for power, but empowerment.
+//
+// Licensed under the MIT License — short, sweet, and to the point.
+// No restrictions, no delays. Just create. Just be human. ✌️
 // — Diornov
-//
-//
-//
+
 pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
@@ -165,52 +171,55 @@ contract DAOPresale is Initializable, UUPSUpgradeable {
         return totalTokens;
     }
 
-function calculateSellReturn(uint256 tokenAmount) public view returns (uint256) {
-    uint256 tokensSold = getTokensSold();
-    
-    // If attempting to sell more than have been sold, revert
-    if (tokenAmount > tokensSold) {
-        revert("Cannot sell more than have been purchased");
-    }
-    
-    uint256 remainingTokens = tokenAmount;
-    uint256 totalEth = 0;
-    
-    // Starting tier and position within that tier
-    uint256 currentTier = tokensSold / tokensPerTier;
-    uint256 positionInTier = tokensSold % tokensPerTier;
-    
-    while (remainingTokens > 0) {
-        // Calculate price for current tier
-        uint256 price = (initialPrice * (TIER_MULTIPLIER ** currentTier)) / (100 ** currentTier);
-        
-        // How many tokens can be sold in the current tier
-        uint256 tokensInCurrentTier = positionInTier;
-        
-        if (remainingTokens <= tokensInCurrentTier) {
-            // All remaining tokens can be sold in current tier
-            uint256 ethForTier = (remainingTokens * price) / PRECISION;
-            totalEth += ethForTier;
-            break;
-        } else {
-            // Sell what we can in the current tier
-            uint256 ethForTier = (tokensInCurrentTier * price) / PRECISION;
-            totalEth += ethForTier;
-            remainingTokens -= tokensInCurrentTier;
-            
-            // Move to previous tier if possible
-            if (currentTier > 0) {
-                currentTier--;
-                positionInTier = tokensPerTier; // Full tier
-            } else {
-                // We've gone through all tiers
+    function calculateSellReturn(
+        uint256 tokenAmount
+    ) public view returns (uint256) {
+        uint256 tokensSold = getTokensSold();
+
+        // If attempting to sell more than have been sold, revert
+        if (tokenAmount > tokensSold) {
+            revert("Cannot sell more than have been purchased");
+        }
+
+        uint256 remainingTokens = tokenAmount;
+        uint256 totalEth = 0;
+
+        // Starting tier and position within that tier
+        uint256 currentTier = tokensSold / tokensPerTier;
+        uint256 positionInTier = tokensSold % tokensPerTier;
+
+        while (remainingTokens > 0) {
+            // Calculate price for current tier
+            uint256 price = (initialPrice * (TIER_MULTIPLIER ** currentTier)) /
+                (100 ** currentTier);
+
+            // How many tokens can be sold in the current tier
+            uint256 tokensInCurrentTier = positionInTier;
+
+            if (remainingTokens <= tokensInCurrentTier) {
+                // All remaining tokens can be sold in current tier
+                uint256 ethForTier = (remainingTokens * price) / PRECISION;
+                totalEth += ethForTier;
                 break;
+            } else {
+                // Sell what we can in the current tier
+                uint256 ethForTier = (tokensInCurrentTier * price) / PRECISION;
+                totalEth += ethForTier;
+                remainingTokens -= tokensInCurrentTier;
+
+                // Move to previous tier if possible
+                if (currentTier > 0) {
+                    currentTier--;
+                    positionInTier = tokensPerTier; // Full tier
+                } else {
+                    // We've gone through all tiers
+                    break;
+                }
             }
         }
+
+        return totalEth;
     }
-    
-    return totalEth;
-}
 
     function getCurrentTier() public view returns (uint256) {
         uint256 tokensSold = getTokensSold();
@@ -273,13 +282,13 @@ function calculateSellReturn(uint256 tokenAmount) public view returns (uint256) 
         return (tokensReceived, pricesPerTier, tokensPerTierBought);
     }
 
-function quoteETHForExactTokens(
-    uint256 tokenAmount
-) external view returns (uint256 ethReceived, uint256 currentTierPrice) {
-    currentTierPrice = getCurrentPrice();
-    ethReceived = calculateSellReturn(tokenAmount);
-    return (ethReceived, currentTierPrice);
-}
+    function quoteETHForExactTokens(
+        uint256 tokenAmount
+    ) external view returns (uint256 ethReceived, uint256 currentTierPrice) {
+        currentTierPrice = getCurrentPrice();
+        ethReceived = calculateSellReturn(tokenAmount);
+        return (ethReceived, currentTierPrice);
+    }
 
     function getPresaleState()
         external
@@ -296,10 +305,10 @@ function quoteETHForExactTokens(
         currentPrice = getCurrentPrice();
         remainingInTier = getRemainingInCurrentTier();
         totalRemaining = token.balanceOf(address(this));
-        
+
         // Calculate net ETH raised (total raised minus total paid out)
         totalRaised = totalEthRaised - totalEthPaidOut;
-        
+
         return (
             currentTier,
             currentPrice,
@@ -332,9 +341,7 @@ function quoteETHForExactTokens(
         emit Paused(_paused);
     }
 
-    function _authorizeUpgrade(
-        address
-    ) internal override view {
+    function _authorizeUpgrade(address) internal view override {
         require(msg.sender == dao, "Only DAO");
     }
 

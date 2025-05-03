@@ -5,32 +5,49 @@ async function main() {
   console.log("Starting DAOFactory deployment (v1.0.0)...");
 
   // Deploy implementation
-  const DAOFactory = await ethers.getContractFactory("DAOFactory");
+  const DAOFactory = await ethers.getContractFactory(
+    "contracts/DAOFactory.sol:DAOFactory"
+  );
+
   const implementation = await DAOFactory.deploy();
   await implementation.waitForDeployment();
-  
   const implementationAddress = await implementation.getAddress();
+
+  // const implementationAddress = '0x9b541216B78e2dcec4b68919F94368b1edF230bB'
+
   console.log("DAOFactory implementation deployed to:", implementationAddress);
 
   // Get initialization data
   const [deployer] = await ethers.getSigners();
-  const initData = DAOFactory.interface.encodeFunctionData("initialize", [deployer.address]);
+  const initData = DAOFactory.interface.encodeFunctionData("initialize", [
+    deployer.address,
+  ]);
 
   // Deploy proxy
-  const DAOFactoryProxy = await ethers.getContractFactory("contracts/DAOFactoryProxy.sol:DAOFactoryProxy");
+  const DAOFactoryProxy = await ethers.getContractFactory(
+    "contracts/DAOFactoryProxy.sol:DAOFactoryProxy"
+  );
+
   const proxy = await DAOFactoryProxy.deploy(implementationAddress, initData);
   await proxy.waitForDeployment();
-
   const proxyAddress = await proxy.getAddress();
+
+  // const proxyAddress = '0x8d2D2fb9388B16a51263593323aBBDf80aee54e6'
+
+
   console.log("DAOFactoryProxy deployed to:", proxyAddress);
 
   // Verify the implementation contract
-  console.log("\nVerifying implementation contract on Etherscan...");
+  console.log("\nVerifying implementation contract...");
   await verify(implementationAddress, []);
 
   // Verify the proxy contract
-  console.log("\nVerifying proxy contract on Etherscan...");
-  await verify(proxyAddress, [implementationAddress, initData], "contracts/DAOFactoryProxy.sol:DAOFactoryProxy");
+  console.log("\nVerifying proxy contract...");
+  await verify(
+    proxyAddress,
+    [implementationAddress, initData],
+    "contracts/DAOFactoryProxy.sol:DAOFactoryProxy"
+  );
 
   console.log("\nDeployment completed!");
   console.log("Implementation:", implementationAddress);
@@ -39,7 +56,7 @@ async function main() {
   // Return addresses for use in other scripts
   return {
     implementationAddress,
-    proxyAddress
+    proxyAddress,
   };
 }
 

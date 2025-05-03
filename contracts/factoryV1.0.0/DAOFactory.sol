@@ -30,12 +30,12 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "./DAOV1Interfaces.sol";
-import "./DAOProxy.sol";
-import "./DAOTokenProxy.sol";
-import "./DAOTreasuryProxy.sol";
-import "./DAOStakingProxy.sol";
-import "./core/interfaces/IDAOModule.sol";
+import "../DAOV1Interfaces.sol";
+import "../DAOProxy.sol";
+import "../DAOTokenProxy.sol";
+import "../DAOTreasuryProxy.sol";
+import "../DAOStakingProxy.sol";
+import "../core/interfaces/IDAOModule.sol";
 
 /**
  * @title DAOFactory
@@ -49,7 +49,7 @@ import "./core/interfaces/IDAOModule.sol";
  */
 contract DAOFactory is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     // Constants (not stored in contract storage)
-    string public constant FACTORY_VERSION = "1.0.0";
+    string public constant FACTORY_VERSION = "1.0.1";
 
     /**
      * @dev Storage layout is critical for upgradeable contracts.
