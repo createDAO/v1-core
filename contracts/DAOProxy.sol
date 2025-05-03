@@ -103,12 +103,4 @@ contract DAOProxy is Proxy {
     fallback() external payable virtual override {
         _fallback();
     }
-
-    /**
-     * @dev Fallback function that delegates calls to the implementation. Will run if call data
-     * is empty.
-     */
-    receive() external payable virtual {
-        _fallback();
-    }
 }

@@ -20,6 +20,7 @@ const BLAST_RPC_URL = process.env.BLAST_RPC_URL || "";
 const SCROLL_RPC_URL = process.env.SCROLL_RPC_URL || "";
 const UNICHAIN_RPC_URL = process.env.UNICHAIN_RPC_URL || "";
 const SEPOLIA_RPC_URL = process.env.SEPOLIA_RPC_URL || "";
+const WORLDCHAIN_RPC_URL = process.env.WORLDCHAIN_RPC_URL || "";
 
 // API Keys
 const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY || "";
@@ -36,6 +37,7 @@ const CELOSCAN_API_KEY = process.env.CELOSCAN_API_KEY || "";
 const BLASTSCAN_API_KEY = process.env.BLASTSCAN_API_KEY || "";
 const SCROLLSCAN_API_KEY = process.env.SCROLLSCAN_API_KEY || "";
 const UNISCAN_API_KEY = process.env.UNISCAN_API_KEY || "";
+const WORLDCHAINSCAN_API_KEY = process.env.WORLDCHAINSCAN_API_KEY || "";
 
 // Define networks configuration
 const networks: any = {
@@ -169,6 +171,15 @@ if (PRIVATE_KEY.length === 64 || PRIVATE_KEY.length === 66) {
     };
   }
 
+  // World chain
+  if (WORLDCHAIN_RPC_URL) {
+    networks.worldchain = {
+      url: WORLDCHAIN_RPC_URL,
+      accounts: [PRIVATE_KEY],
+      chainId: 480,
+    };
+  }
+
   // Sepolia (testnet)
   if (SEPOLIA_RPC_URL) {
     networks.sepolia = {
@@ -182,6 +193,24 @@ if (PRIVATE_KEY.length === 64 || PRIVATE_KEY.length === 66) {
 // Define etherscan configuration
 const etherscan: any = {
   apiKey: {},
+  customChains: [
+    {
+      network: "unichain",
+      chainId: 130,
+      urls: {
+        apiURL: "https://api.uniscan.xyz/api",
+        browserURL: "https://uniscan.xyz/"
+      }
+    },
+    {
+      network: "worldchain",
+      chainId: 480,
+      urls: {
+        apiURL: "https://api.worldscan.org/api",
+        browserURL: "https://worldscan.org/"
+      }
+    }
+  ]
 };
 
 // Define sourcify configuration
@@ -202,7 +231,7 @@ if (POLYGONSCAN_API_KEY) {
   etherscan.apiKey.polygon = POLYGONSCAN_API_KEY;
 }
 if (ARBISCAN_API_KEY) {
-  etherscan.apiKey.arbitrum = ARBISCAN_API_KEY;
+  etherscan.apiKey.arbitrumOne = ARBISCAN_API_KEY;
 }
 if (OPTIMISTIC_ETHERSCAN_API_KEY) {
   etherscan.apiKey.optimism = OPTIMISTIC_ETHERSCAN_API_KEY;
@@ -214,7 +243,7 @@ if (SNOWTRACE_API_KEY) {
   etherscan.apiKey.avalanche = SNOWTRACE_API_KEY;
 }
 if (GNOSISSCAN_API_KEY) {
-  etherscan.apiKey.gnosis = GNOSISSCAN_API_KEY;
+  etherscan.apiKey.xdai = GNOSISSCAN_API_KEY;
 }
 if (MANTLESCAN_API_KEY) {
   etherscan.apiKey.mantle = MANTLESCAN_API_KEY;
@@ -231,14 +260,16 @@ if (SCROLLSCAN_API_KEY) {
 if (UNISCAN_API_KEY) {
   etherscan.apiKey.unichain = UNISCAN_API_KEY;
 }
-
+if (WORLDCHAINSCAN_API_KEY) {
+  etherscan.apiKey.worldchain = WORLDCHAINSCAN_API_KEY;
+}
 const config: HardhatUserConfig = {
-  // mocha: {
-  //   reporter: 'mocha-json-output-reporter',
-  //   reporterOptions: {
-  //     output: 'reports/data/test-results.json'
-  //   }
-  // },
+  mocha: {
+    reporter: 'mocha-json-output-reporter',
+    reporterOptions: {
+      output: 'reports/data/test-results.json'
+    }
+  },
   gasReporter: {
     enabled: true,
     currency: "USD",

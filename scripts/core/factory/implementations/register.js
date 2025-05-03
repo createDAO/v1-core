@@ -42,7 +42,7 @@ async function main(params = {}) {
   console.log("Version to register:", VERSION);
 
   // // Get the factory contract
-  const DAOFactory = await ethers.getContractFactory("DAOFactory");
+  const DAOFactory = await ethers.getContractFactory("contracts/DAOFactory.sol:DAOFactory");
   const factory = DAOFactory.attach(FACTORY_PROXY_ADDRESS);
 
   // // Create initialization template (empty for now as it's optional)

@@ -6,10 +6,15 @@ async function main() {
 
   // Deploy DAO implementation
   console.log("\nDeploying DAO implementation...");
+
   const DAO = await ethers.getContractFactory("contracts/DAO.sol:DAO");
+
   const dao = await DAO.deploy();
   await dao.waitForDeployment();
   const daoAddress = await dao.getAddress();
+
+  // const daoAddress = '0xB145c8d584CedDccD4f94F66C89756A0631c75C6'
+
   console.log("DAO implementation deployed to:", daoAddress);
   await verify(daoAddress, []);
 

@@ -74,8 +74,4 @@ contract DAOFactoryProxy is Proxy {
     fallback() external payable virtual override {
         _fallback();
     }
-
-    receive() external payable virtual {
-        _fallback();
-    }
 }

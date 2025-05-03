@@ -8,10 +8,68 @@ View the latest test results, coverage reports, and gas usage analysis at:
 https://reports.createdao.org
 
 The reports include:
+
 - Test execution results and statistics
 - Code coverage analysis
 - Gas usage optimization data
 - Contract deployment costs
+
+## Mainnet Deployments
+
+The following are the official contract addresses deployed on mainnet networks. Always verify these addresses when interacting with the contracts.
+
+### Arbitrum Mainnet
+
+| Contract Name       | Version | Address                                      | Explorer Link                                                                              |
+| :------------------ | :------ | :------------------------------------------- | :----------------------------------------------------------------------------------------- |
+| **DAOFactoryProxy** | 1.0.0   | `0x8d2D2fb9388B16a51263593323aBBDf80aee54e6` | [View on Arbiscan](https://arbiscan.io/address/0x8d2D2fb9388B16a51263593323aBBDf80aee54e6) |
+| Test DAO            | 1.0.0   | `0x25718d871117fe677372fde2282334753dbd33f0` | [View on Arbiscan](https://arbiscan.io/address/0x25718d871117fe677372fde2282334753dbd33f0) |
+
+### Base Mainnet
+
+| Contract Name       | Version | Address                                      | Explorer Link                                                                               |
+| :------------------ | :------ | :------------------------------------------- | :------------------------------------------------------------------------------------------ |
+| **DAOFactoryProxy** | 1.0.0   | `0x8d2D2fb9388B16a51263593323aBBDf80aee54e6` | [View on Basescan](https://basescan.org/address/0x8d2D2fb9388B16a51263593323aBBDf80aee54e6) |
+| Test DAO            | 1.0.0   | `0x25718d871117fe677372fde2282334753dbd33f0` | [View on Basescan](https://basescan.org/address/0x25718d871117fe677372fde2282334753dbd33f0) |
+
+### Gnosis Mainnet
+
+| Contract Name       | Version | Address                                      | Explorer Link                                                                                  |
+| :------------------ | :------ | :------------------------------------------- | :--------------------------------------------------------------------------------------------- |
+| **DAOFactoryProxy** | 1.0.0   | `0x8d2D2fb9388B16a51263593323aBBDf80aee54e6` | [View on Gnosisscan](https://gnosisscan.io/address/0x8d2D2fb9388B16a51263593323aBBDf80aee54e6) |
+| Test DAO            | 1.0.0   | `0x25718d871117fe677372fde2282334753dbd33f0` | [View on Gnosisscan](https://gnosisscan.io/address/0x25718d871117fe677372fde2282334753dbd33f0) |
+
+### Polygon Mainnet
+
+| Contract Name       | Version | Address                                      | Explorer Link                                                                                     |
+| :------------------ | :------ | :------------------------------------------- | :------------------------------------------------------------------------------------------------ |
+| **DAOFactoryProxy** | 1.0.0   | `0x8d2D2fb9388B16a51263593323aBBDf80aee54e6` | [View on Polygonscan](https://polygonscan.com/address/0x8d2D2fb9388B16a51263593323aBBDf80aee54e6) |
+| Test DAO            | 1.0.0   | `0x25718d871117fe677372fde2282334753dbd33f0` | [View on Polygonscan](https://polygonscan.com/address/0x25718d871117fe677372fde2282334753dbd33f0) |
+
+### Unichain Mainnet
+
+| Contract Name       | Version | Address                                      | Explorer Link                                                                             |
+| :------------------ | :------ | :------------------------------------------- | :---------------------------------------------------------------------------------------- |
+| **DAOFactoryProxy** | 1.0.0   | `0x8d2D2fb9388B16a51263593323aBBDf80aee54e6` | [View on Uniscan](https://uniscan.xyz/address/0x8d2D2fb9388B16a51263593323aBBDf80aee54e6) |
+| Test DAO            | 1.0.0   | `0x25718d871117fe677372fde2282334753dbd33f0` | [View on Uniscan](https://uniscan.xyz/address/0x25718d871117fe677372fde2282334753dbd33f0) |
+
+### World Chain Mainnet
+
+| Contract Name       | Version | Address                                      | Explorer Link                                                                                 |
+| :------------------ | :------ | :------------------------------------------- | :-------------------------------------------------------------------------------------------- |
+| **DAOFactoryProxy** | 1.0.0   | `0x8d2D2fb9388B16a51263593323aBBDf80aee54e6` | [View on Worldscan](https://worldscan.org/address/0x8d2D2fb9388B16a51263593323aBBDf80aee54e6) |
+| Test DAO            | 1.0.0   | `0x25718d871117fe677372fde2282334753dbd33f0` | [View on Worldscan](https://worldscan.org/address/0x25718d871117fe677372fde2282334753dbd33f0) |
+
+## Testnet Deployments
+
+The following are the official contract addresses deployed on testnet networks for development and testing purposes.
+
+### Sepolia (Ethereum Testnet)
+
+| Contract Name       | Version | Address                                      | Explorer Link                                                                                                |
+| :------------------ | :------ | :------------------------------------------- | :----------------------------------------------------------------------------------------------------------- |
+| **DAOFactoryProxy** | 1.0.0   | `0xcC961E2a43762caD4c673d471b9fcddE233716Dd` | [View on Sepolia Etherscan](https://sepolia.etherscan.io/address/0xcC961E2a43762caD4c673d471b9fcddE233716Dd) |
+| Test DAO            | 1.0.0   | `0x5DA9a78704A3Fa89a2Dd4E860A4053323F3932cd` | [View on Sepolia Etherscan](https://sepolia.etherscan.io/address/0x5DA9a78704A3Fa89a2Dd4E860A4053323F3932cd) |
 
 ## Features
 
@@ -78,11 +136,13 @@ npx hardhat test
 ### Deployment
 
 1. Deploy Factory and Implementation Contracts:
+
 ```bash
 npx hardhat run scripts/flows/test.js
 ```
 
 2. Create a New DAO:
+
 ```bash
 npx hardhat run scripts/core/dao/create.js
 ```
@@ -120,6 +180,7 @@ npx hardhat coverage
 ### Continuous Integration
 
 The project uses GitHub Actions for automated testing. On every push and pull request to the main/master branch:
+
 - Runs the full test suite on the Hardhat network
 - Verifies contract compilation and functionality
 
@@ -130,6 +191,7 @@ The workflow configuration can be found in `.github/workflows/test.yml`.
 This project is licensed under the Business Source License 1.1 (MIT). See the [LICENSE](LICENSE) file for details.
 
 The license terms include:
+
 - 4-year commercial use restriction (until 2028-02-11)
 - Non-production use allowed
 - Converts to GPLv2 after the restriction period

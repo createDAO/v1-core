@@ -38,9 +38,9 @@ describe("DAOFactory Creation", function() {
       const treasuryAddress = ethers.getAddress(event.topics[3].slice(26));
       
       // Get contract instances
-      const dao = await ethers.getContractAt("DAO", daoAddress) as DAO;
-      const token = await ethers.getContractAt("DAOToken", tokenAddress) as DAOToken;
-      const treasury = await ethers.getContractAt("DAOTreasury", treasuryAddress) as DAOTreasury;
+      const dao = await ethers.getContractAt("contracts/DAO.sol:DAO", daoAddress) as DAO;
+      const token = await ethers.getContractAt("contracts/DAOToken.sol:DAOToken", tokenAddress) as DAOToken;
+      const treasury = await ethers.getContractAt("contracts/DAOTreasury.sol:DAOTreasury", treasuryAddress) as DAOTreasury;
       
       // Verify initialization
       expect(await dao.name()).to.equal(daoName);
@@ -72,9 +72,9 @@ describe("DAOFactory Creation", function() {
       const treasuryAddress = ethers.getAddress(event.topics[3].slice(26));
       const stakingAddress = event.args?.stakingAddress;
       
-      const dao = await ethers.getContractAt("DAO", daoAddress) as DAO;
-      const token = await ethers.getContractAt("DAOToken", tokenAddress) as DAOToken;
-      const staking = await ethers.getContractAt("DAOStaking", stakingAddress) as DAOStaking;
+      const dao = await ethers.getContractAt("contracts/DAO.sol:DAO", daoAddress) as DAO;
+      const token = await ethers.getContractAt("contracts/DAOToken.sol:DAOToken", tokenAddress) as DAOToken;
+      const staking = await ethers.getContractAt("contracts/DAOStaking.sol:DAOStaking", stakingAddress) as DAOStaking;
       
       // Verify contract relationships
       expect(await dao.upgradeableContracts(0)).to.equal(daoAddress); // DAO = 0
@@ -107,9 +107,9 @@ describe("DAOFactory Creation", function() {
       const tokenAddress = ethers.getAddress(event.topics[2].slice(26));
       const stakingAddress = event.args?.stakingAddress;
       
-      const dao = await ethers.getContractAt("DAO", daoAddress) as DAO;
-      const token = await ethers.getContractAt("DAOToken", tokenAddress) as DAOToken;
-      const staking = await ethers.getContractAt("DAOStaking", stakingAddress) as DAOStaking;
+      const dao = await ethers.getContractAt("contracts/DAO.sol:DAO", daoAddress) as DAO;
+      const token = await ethers.getContractAt("contracts/DAOToken.sol:DAOToken", tokenAddress) as DAOToken;
+      const staking = await ethers.getContractAt("contracts/DAOStaking.sol:DAOStaking", stakingAddress) as DAOStaking;
 
       // Verify ownership
       expect(await dao.owner()).to.equal(daoAddress); // DAO owns itself
@@ -151,7 +151,7 @@ describe("DAOFactory Creation", function() {
       const tokenAddress = ethers.getAddress(event.topics[2].slice(26));
       const treasuryAddress = ethers.getAddress(event.topics[3].slice(26));
       
-      const token = await ethers.getContractAt("DAOToken", tokenAddress) as DAOToken;
+      const token = await ethers.getContractAt("contracts/DAOToken.sol:DAOToken", tokenAddress) as DAOToken;
       
       // Verify token distribution
       expect(await token.balanceOf(owner.address)).to.equal(ethers.parseEther("1")); // 1 token for initial holder
