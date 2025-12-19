@@ -1,3 +1,40 @@
+# ⚠️ DEPRECATED & UNSAFE: CreateDAO v1-core
+
+> **NOTICE:** This version of CreateDAO is deprecated and contains a critical security vulnerability. It is preserved here for historical reference only. **Do not use this code in production.**
+
+## 🚀 Switch to CreateDAO v2
+A new, secured version of the CreateDAO Factory contracts has been released. Please use the updated repository:
+
+👉 **[CreateDAO v2-core](https://github.com/createDAO/v2-core)**
+
+---
+
+## 🛑 Security Vulnerability Disclosure
+This version (v1) is vulnerable to a **Sybil / Double-Voting attack**. 
+
+**Vulnerability Details:**
+The logic allows a user to:
+1. Stake tokens and vote on a proposal.
+2. Unstake those tokens immediately.
+3. Transfer tokens to a different wallet.
+4. Restake and vote again on the same proposal using the new wallet.
+
+This allows a single token holder to exert unlimited voting power. 
+
+**The Fix:**
+In **v2-core**, we have completely replaced the custom governance logic with the OpenZeppelin Governor standard. The vulnerability is resolved through:
+
+ERC20Votes & Checkpoints: We now use ERC20Votes. This tracks a history of voting power (checkpoints). When a proposal is created, the system looks at the voting power at a specific past block number (snapshot), making it impossible to "double vote" by moving tokens after a proposal is live.
+
+Mandatory Delegation: Using the Auto-delegation feature to ensure voting power is correctly activated and tracked on-chain as soon as tokens are received.
+
+Battle-Tested Logic: By leveraging the OZ Governor pattern, we utilize industry-standard security measures that have been audited and stress-tested across the EVM ecosystem.
+
+---
+
+## Original Documentation (Legacy)
+*The information below is for historical reference only.*
+
 # createDAO
 
 A comprehensive DAO creation and management platform built on Ethereum. This platform allows users to easily deploy and manage Decentralized Autonomous Organizations (DAOs) with features like governance, token management, staking, and presale capabilities.
